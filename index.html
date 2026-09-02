@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vocal TAB - Piano Numérico</title>
+    <style>
+        :root {
+            /* Fondo Minimalista Oscuro */
+            --bg-color: #09090b; 
+            --text-color: #f4f4f5;
+            
+            /* Teclas Clásicas */
+            --white-key: #ffffff;
+            --black-key: #18181b;
+            --white-key-text: #000000;
+            --black-key-text: #ffffff;
+            --border-color: #d4d4d8;
+            --piano-bg: #27272a;
+
+            /* NUEVA PALETA MODERNA (Violeta, Rosa, Índigo) */
+            --main-active: #8b5cf6;   /* Violeta Vibrante */
+            --upper-active: #f43f5e;  /* Rosa Neón */
+            --lower-active: #4f46e5;  /* Índigo Profundo */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            background: linear-gradient(to right, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Leyenda */
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #d4d4d8;
+        }
+        .legend span { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.lower { background-color: var(--lower-active); }
+        .dot.main { background-color: var(--main-active); box-shadow: 0 0 8px var(--main-active); }
+        .dot.upper { background-color: var(--upper-active); }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        select {
+            flex: 1 1 120px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            border: 1px solid #3f3f46;
+            border-radius: 8px;
+            background-color: #18181b;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--main-active);
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+        }
+
+        .piano-scroll-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 15px; 
+            scrollbar-width: auto;
+            scrollbar-color: #52525b #18181b;
+        }
+
+        .piano {
+            display: flex;
+            position: relative;
+            background-color: var(--piano-bg);
+            padding: 4px;
+            border-radius: 8px;
+            width: max-content;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .key-wrapper {
+            position: relative;
+            display: flex; 
+        }
+
+        .key {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 12px;
+            font-size: 18px;
+            font-weight: 800;
+            box-sizing: border-box;
+            user-select: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent; 
+            /* FIX DE NAVEGACIÓN: Permite scroll tanto horizontal como vertical al tocar el piano */
+            touch-action: pan-x pan-y; 
+            transition: background-color 0.1s ease;
+        }
+
+        .key.white {
+            width: 45px; 
+            height: 180px; 
+            background-color: var(--white-key);
+            color: var(--white-key-text); 
+            border: 1px solid var(--border-color);
+            border-radius: 0 0 5px 5px;
+            margin-right: 1px;
+        }
+
+        .key.black {
+            width: 28px;
+            height: 110px;
+            background-color: var(--black-key);
+            color: var(--black-key-text); 
+            position: absolute;
+            top: 0;
+            left: 31px; 
+            border-radius: 0 0 5px 5px;
+            z-index: 2;
+            padding-bottom: 10px;
+            font-size: 14px;
+            border: 1px solid #000000; 
+            box-shadow: 2px 4px 6px rgba(0,0,0,0.6); 
+        }
+
+        /* --- ESTILOS ACTIVOS (NUEVOS COLORES MODERNOS) --- */
+        
+        /* Octava Principal (Violeta) */
+        .key.white.active.main { 
+            background-color: var(--main-active); 
+            color: #ffffff; 
+            border-color: #6d28d9; 
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.15);
+        }
+        .key.black.active.main { 
+            background-color: var(--main-active); 
+            color: #ffffff; 
+            border: 1px solid #4c1d95; 
+        }
+
+        /* Octava Superior (Rosa Neón) */
+        .key.white.active.upper { 
+            background-color: var(--upper-active); 
+            color: #ffffff; 
+            border-color: #be123c; 
+        }
+        .key.black.active.upper { 
+            background-color: var(--upper-active); 
+            color: #ffffff; 
+            border: 1px solid #881337; 
+        }
+
+        /* Octava Inferior (Índigo) */
+        .key.white.active.lower { 
+            background-color: var(--lower-active); 
+            color: #ffffff; 
+            border-color: #3730a3; 
+        }
+        .key.black.active.lower { 
+            background-color: var(--lower-active); 
+            color: #ffffff; 
+            border: 1px solid #312e81; 
+        }
+        
+        .key:active { opacity: 0.8; }
+
+    </style>
+</head>
+<body>
+
+    <h1>Entrenamiento Vocal TAB</h1>
+
+    <div class="legend">
+        <span><div class="dot lower"></div> Graves (-1)</span>
+        <span><div class="dot main"></div> Melodía (1)</span>
+        <span><div class="dot upper"></div> Agudos (1+)</span>
+    </div>
+
+    <div class="controls">
+        <select id="root-selector">
+            <option value="0">Do (C)</option>
+            <option value="1">Do# (C#)</option>
+            <option value="2">Re (D)</option>
+            <option value="3">Re# (D#)</option>
+            <option value="4">Mi (E)</option>
+            <option value="5">Fa (F)</option>
+            <option value="6">Fa# (F#)</option>
+            <option value="7">Sol (G)</option>
+            <option value="8">Sol# (G#)</option>
+            <option value="9">La (A)</option>
+            <option value="10">La# (A#)</option>
+            <option value="11">Si (B)</option>
+        </select>
+
+        <select id="type-selector">
+            <option value="mayor">Mayor</option>
+            <option value="menor">Menor (Natural)</option>
+            <option value="armonica">Menor (Armónica)</option>
+        </select>
+
+        <select id="octave-selector">
+            <option value="1">Octava 2 (C2)</option>
+            <option value="2" selected>Octava 3 (Central)</option>
+            <option value="3">Octava 4 (C4)</option>
+        </select>
+    </div>
+
+    <div class="piano-scroll-wrapper" id="scroll-wrapper">
+        <div class="piano" id="piano-container"></div>
+    </div>
+
+    <script>
+        // --- MOTOR DE AUDIO ---
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSound(noteIndex) {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            // Offset MIDI para que nuestro index 0 sea C2 (MIDI 36)
+            const midiNote = 36 + noteIndex;
+            const frequency = 440 * Math.pow(2, (midiNote - 69) / 12);
+
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'triangle'; 
+            oscillator.frequency.value = frequency;
+
+            const now = audioCtx.currentTime;
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.6, now + 0.02); 
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5); 
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.start(now);
+            oscillator.stop(now + 1.5); 
+        }
+
+        // --- LÓGICA MUSICAL Y CONSTRUCCIÓN ---
+        const formulas = {
+            mayor: [0, 2, 4, 5, 7, 9, 11],     
+            menor: [0, 2, 3, 5, 7, 8, 10],     
+            armonica: [0, 2, 3, 5, 7, 8, 11]   
+        };
+
+        const pianoContainer = document.getElementById('piano-container');
+        const scrollWrapper = document.getElementById('scroll-wrapper');
+        
+        const numOctaves = 5; 
+        const totalNotes = numOctaves * 12 + 1; 
+        const blackKeyIndices = [1, 3, 6, 8, 10]; 
+
+        for (let i = 0; i < totalNotes; i++) {
+            const noteInOctave = i % 12;
+            const isBlack = blackKeyIndices.includes(noteInOctave);
+
+            if (!isBlack) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'key-wrapper';
+
+                const whiteKey = document.createElement('div');
+                whiteKey.className = 'key white';
+                whiteKey.dataset.note = i;
+                whiteKey.addEventListener('pointerdown', () => playSound(i));
+                wrapper.appendChild(whiteKey);
+
+                const nextNote = i + 1;
+                const nextNoteInOctave = nextNote % 12;
+                
+                if (nextNote < totalNotes && blackKeyIndices.includes(nextNoteInOctave)) {
+                    const blackKey = document.createElement('div');
+                    blackKey.className = 'key black';
+                    blackKey.dataset.note = nextNote;
+                    blackKey.addEventListener('pointerdown', () => playSound(nextNote));
+                    wrapper.appendChild(blackKey);
+                }
+                pianoContainer.appendChild(wrapper);
+            }
+        }
+
+        // --- DECLARACIÓN DE VARIABLES ---
+        const rootSelector = document.getElementById('root-selector');
+        const typeSelector = document.getElementById('type-selector');
+        const octaveSelector = document.getElementById('octave-selector');
+
+        // --- RENDERIZADO Y SCROLL ---
+        function centerPianoOnNote(noteIndex) {
+            const keyElement = document.querySelector(`.key[data-note="${noteIndex}"]`);
+            if (keyElement) {
+                const wrapperElement = keyElement.closest('.key-wrapper');
+                if (wrapperElement) {
+                    const scrollTarget = wrapperElement.offsetLeft - (scrollWrapper.clientWidth / 2) + (wrapperElement.clientWidth / 2);
+                    scrollWrapper.scrollTo({
+                        left: scrollTarget,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }
+
+        function renderScale() {
+            const rootNote = parseInt(rootSelector.value);
+            const scaleType = typeSelector.value;
+            const baseOctave = parseInt(octaveSelector.value);
+
+            const currentFormula = formulas[scaleType];
+
+            document.querySelectorAll('.key').forEach(key => {
+                key.className = key.className.replace(/active|main|upper|lower/g, '').trim();
+                key.textContent = ''; 
+            });
+
+            for (let octOffset = -1; octOffset <= 1; octOffset++) {
+                const rootIndex = (baseOctave + octOffset) * 12 + rootNote;
+                const activeNotes = currentFormula.map(interval => rootIndex + interval);
+
+                activeNotes.forEach((noteIndex, i) => {
+                    const keyElement = document.querySelector(`.key[data-note="${noteIndex}"]`);
+                    
+                    if (keyElement) {
+                        keyElement.classList.add('active');
+                        const degree = i + 1; 
+
+                        if (octOffset === 0) {
+                            keyElement.classList.add('main');
+                            keyElement.textContent = degree; 
+                        } else if (octOffset === 1) {
+                            keyElement.classList.add('upper');
+                            keyElement.textContent = degree + '+'; 
+                        } else if (octOffset === -1) {
+                            keyElement.classList.add('lower');
+                            keyElement.textContent = '-' + degree; 
+                        }
+                    }
+                });
+            }
+
+            const mainTonicIndex = (baseOctave * 12) + rootNote;
+            setTimeout(() => centerPianoOnNote(mainTonicIndex), 50); 
+        }
+
+        rootSelector.addEventListener('change', renderScale);
+        typeSelector.addEventListener('change', renderScale);
+        octaveSelector.addEventListener('change', renderScale);
+
+        renderScale();
+    </script>
+</body>
+</html>
