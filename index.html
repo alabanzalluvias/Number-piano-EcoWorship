@@ -17,8 +17,8 @@
             --piano-bg: rgba(24, 24, 27, 0.6);
 
             --main-active: #8b5cf6;   
-            --upper-active: #f43f5e;  
-            --lower-active: #4f46e5;  
+            --upper-active: #be123c;  
+            --lower-active: #4338ca;  
         }
 
         body {
@@ -60,9 +60,10 @@
         }
         .legend span { display: flex; align-items: center; gap: 8px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .dot.lower { background-color: var(--lower-active); box-shadow: 0 0 10px var(--lower-active); }
+        
+        .dot.lower { background-color: var(--lower-active); }
         .dot.main { background-color: var(--main-active); box-shadow: 0 0 10px var(--main-active); }
-        .dot.upper { background-color: var(--upper-active); box-shadow: 0 0 10px var(--upper-active); }
+        .dot.upper { background-color: var(--upper-active); }
 
         .controls {
             display: flex;
@@ -138,6 +139,7 @@
 
         .key {
             display: flex;
+            position: relative; 
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
@@ -170,10 +172,25 @@
             top: 0;
             left: 33px; 
             border-radius: 0 0 6px 6px;
-            z-index: 2;
+            z-index: 5; /* Aumentado para asegurar que siempre esté por encima de la luz */
             border: 1px solid #000000;
             border-bottom: 3px solid #000000;
             box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
+        }
+
+        /* EFECTO DE ILUMINACIÓN CORREGIDO */
+        .key.pressed::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.6);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .note-name, .degree {
+            pointer-events: none; 
         }
 
         .note-name {
@@ -191,6 +208,7 @@
         .key.black .note-name { font-size: 11px; margin-bottom: 3px; }
         .key.black .degree { font-size: 15px; }
 
+        /* OCTAVA PRINCIPAL */
         .key.white.active.main { 
             background: var(--main-active); color: #ffffff; border-color: #6d28d9; border-bottom-color: #4c1d95;
             box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), inset 0 -10px 20px rgba(0,0,0,0.2); 
@@ -200,28 +218,29 @@
             box-shadow: 0 5px 15px rgba(139, 92, 246, 0.5);
         }
         
+        /* OCTAVA SUPERIOR */
         .key.white.active.upper { 
-            background: var(--upper-active); color: #ffffff; border-color: #be123c; border-bottom-color: #881337;
-            box-shadow: 0 0 20px rgba(244, 63, 94, 0.4), inset 0 -10px 20px rgba(0,0,0,0.2);
+            background: var(--upper-active); color: #e4e4e7; border-color: #881337; border-bottom-color: #4c0519;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
         }
         .key.black.active.upper { 
-            background: linear-gradient(to bottom, var(--upper-active), #e11d48); color: #ffffff; border-color: #9f1239;
-            box-shadow: 0 5px 15px rgba(244, 63, 94, 0.5);
+            background: linear-gradient(to bottom, #e11d48, var(--upper-active)); color: #e4e4e7; border-color: #881337; border-bottom-color: #4c0519;
+            box-shadow: 2px 5px 10px rgba(0,0,0,0.7);
         }
         
+        /* OCTAVA INFERIOR */
         .key.white.active.lower { 
-            background: var(--lower-active); color: #ffffff; border-color: #3730a3; border-bottom-color: #312e81;
-            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4), inset 0 -10px 20px rgba(0,0,0,0.2);
+            background: var(--lower-active); color: #e4e4e7; border-color: #3730a3; border-bottom-color: #1e1b4b;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
         }
         .key.black.active.lower { 
-            background: linear-gradient(to bottom, var(--lower-active), #4338ca); color: #ffffff; border-color: #312e81; 
-            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.5);
+            background: linear-gradient(to bottom, #4f46e5, var(--lower-active)); color: #e4e4e7; border-color: #312e81; border-bottom-color: #1e1b4b;
+            box-shadow: 2px 5px 10px rgba(0,0,0,0.7);
         }
         
         .key:active { transform: translateY(2px); border-bottom-width: 2px; }
         .key.black:active { border-bottom-width: 1px; }
 
-        /* NUEVO: ESTILO PARA LA FIRMA */
         .footer-signature {
             margin-top: 40px;
             font-size: 0.85rem;
@@ -245,7 +264,7 @@
 </head>
 <body>
 
-    <h1>Vocal TAB: Guía de Escalas</h1>
+    <h1>Guía de Escalas Voces EcoWorship</h1>
 
     <div class="legend">
         <span><div class="dot lower"></div> Graves (-1)</span>
@@ -274,6 +293,8 @@
             <option value="Mayor">Mayor</option>
             <option value="Menor (Natural)">Menor (Natural)</option>
             <option value="Menor (Armónica)">Menor (Armónica)</option>
+            <option value="Pentatónica Mayor">Pentatónica Mayor</option>
+            <option value="Pentatónica Menor">Pentatónica Menor</option>
         </select>
 
         <select id="octave-selector">
@@ -327,10 +348,23 @@
         const formulas = {
             "Mayor": [0, 2, 4, 5, 7, 9, 11],     
             "Menor (Natural)": [0, 2, 3, 5, 7, 8, 10],     
-            "Menor (Armónica)": [0, 2, 3, 5, 7, 8, 11]   
+            "Menor (Armónica)": [0, 2, 3, 5, 7, 8, 11],
+            "Pentatónica Mayor": [0, 2, 4, 7, 9],
+            "Pentatónica Menor": [0, 3, 5, 7, 10]
         };
 
         const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+        
+        const intervalToDiatonicStep = {
+            0: 0, 
+            1: 1, 2: 1, 
+            3: 2, 4: 2, 
+            5: 3, 6: 3, 
+            7: 4, 
+            8: 5, 9: 5, 
+            10: 6, 11: 6 
+        };
+
         const pitchMap = {
             0: ['C', 'B#', 'Dbb'],
             1: ['Db', 'C#', 'Bx'],
@@ -353,6 +387,13 @@
         const totalNotes = numOctaves * 12 + 1; 
         const blackKeyIndices = [1, 3, 6, 8, 10]; 
 
+        function bindPressEffect(element) {
+            element.addEventListener('pointerdown', () => element.classList.add('pressed'));
+            element.addEventListener('pointerup', () => element.classList.remove('pressed'));
+            element.addEventListener('pointerleave', () => element.classList.remove('pressed'));
+            element.addEventListener('pointercancel', () => element.classList.remove('pressed'));
+        }
+
         for (let i = 0; i < totalNotes; i++) {
             const noteInOctave = i % 12;
             const isBlack = blackKeyIndices.includes(noteInOctave);
@@ -365,6 +406,7 @@
                 whiteKey.className = 'key white';
                 whiteKey.dataset.note = i;
                 whiteKey.addEventListener('pointerdown', () => playSound(i));
+                bindPressEffect(whiteKey); 
                 wrapper.appendChild(whiteKey);
 
                 const nextNote = i + 1;
@@ -375,6 +417,7 @@
                     blackKey.className = 'key black';
                     blackKey.dataset.note = nextNote;
                     blackKey.addEventListener('pointerdown', () => playSound(nextNote));
+                    bindPressEffect(blackKey); 
                     wrapper.appendChild(blackKey);
                 }
                 pianoContainer.appendChild(wrapper);
@@ -437,7 +480,10 @@
                         if (octOffset === 1) degreeText = degreeNum + '+';
                         else if (octOffset === -1) degreeText = '-' + degreeNum;
 
-                        const expectedLetterIndex = (rootLetterIndex + i) % 7;
+                        const chromaticInterval = currentFormula[i];
+                        const diatonicStep = intervalToDiatonicStep[chromaticInterval];
+                        
+                        const expectedLetterIndex = (rootLetterIndex + diatonicStep) % 7;
                         const expectedLetter = letters[expectedLetterIndex];
                         const actualPitch = noteIndex % 12;
                         
