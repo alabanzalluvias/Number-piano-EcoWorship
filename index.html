@@ -16,9 +16,11 @@
             --black-key-text: #ffffff;
             --piano-bg: rgba(24, 24, 27, 0.6);
 
-            --main-active: #8b5cf6;   
-            --upper-active: #be123c;  
-            --lower-active: #4338ca;  
+            --main-active: #a78bfa;   
+            --upper-active: #fb7185;  
+            --lower-active: #818cf8;  
+            
+            --tessitura-color: #38bdf8; 
         }
 
         body {
@@ -30,7 +32,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            min-height: 100dvh; 
         }
 
         h1 {
@@ -57,13 +59,16 @@
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .legend span { display: flex; align-items: center; gap: 8px; }
         .dot { width: 12px; height: 12px; border-radius: 50%; }
         
-        .dot.lower { background-color: var(--lower-active); }
-        .dot.main { background-color: var(--main-active); box-shadow: 0 0 10px var(--main-active); }
-        .dot.upper { background-color: var(--upper-active); }
+        .dot.lower { background-color: var(--lower-active); box-shadow: 0 0 8px var(--lower-active); }
+        .dot.main { background-color: var(--main-active); box-shadow: 0 0 12px var(--main-active); }
+        .dot.upper { background-color: var(--upper-active); box-shadow: 0 0 8px var(--upper-active); }
+        .dot.tessitura { background-color: var(--tessitura-color); border-radius: 2px; height: 4px; width: 16px; box-shadow: 0 0 8px var(--tessitura-color);}
 
         .controls {
             display: flex;
@@ -93,10 +98,21 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
+        #voice-selector {
+            flex: 1 1 100%;
+            border-color: rgba(56, 189, 248, 0.3);
+            color: #bae6fd;
+        }
+
         select:focus {
             border-color: var(--main-active);
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 15px rgba(167, 139, 250, 0.3);
             transform: translateY(-2px);
+        }
+        
+        #voice-selector:focus {
+            border-color: var(--tessitura-color);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
 
         .scale-title {
@@ -106,7 +122,7 @@
             margin-bottom: 20px;
             text-align: center;
             letter-spacing: 0.5px;
-            text-shadow: 0 2px 10px rgba(139, 92, 246, 0.5);
+            text-shadow: 0 2px 10px rgba(167, 139, 250, 0.5);
         }
 
         .piano-scroll-wrapper {
@@ -152,6 +168,7 @@
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* Dimensiones PC / Horizontal */
         .key.white {
             width: 48px; 
             height: 190px; 
@@ -172,13 +189,28 @@
             top: 0;
             left: 33px; 
             border-radius: 0 0 6px 6px;
-            z-index: 5; /* Aumentado para asegurar que siempre esté por encima de la luz */
+            z-index: 5; 
             border: 1px solid #000000;
             border-bottom: 3px solid #000000;
             box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
         }
 
-        /* EFECTO DE ILUMINACIÓN CORREGIDO */
+        .key.tessitura::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+            border-top: 4px solid var(--tessitura-color);
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 2; 
+        }
+        
+        .key.black.tessitura::before {
+            border-top: 3px solid var(--tessitura-color);
+            background: linear-gradient(to bottom, rgba(56, 189, 248, 0.3) 0%, transparent 60%);
+        }
+
         .key.pressed::after {
             content: '';
             position: absolute;
@@ -187,16 +219,19 @@
             box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.6);
             border-radius: inherit;
             pointer-events: none;
+            z-index: 3;
         }
 
         .note-name, .degree {
             pointer-events: none; 
+            z-index: 4; 
+            position: relative;
         }
 
         .note-name {
             font-size: 12px;
             font-weight: 700;
-            opacity: 0.8;
+            opacity: 0.9;
             line-height: 1;
             margin-bottom: 4px;
         }
@@ -207,35 +242,32 @@
         }
         .key.black .note-name { font-size: 11px; margin-bottom: 3px; }
         .key.black .degree { font-size: 15px; }
-
-        /* OCTAVA PRINCIPAL */
+        
         .key.white.active.main { 
-            background: var(--main-active); color: #ffffff; border-color: #6d28d9; border-bottom-color: #4c1d95;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), inset 0 -10px 20px rgba(0,0,0,0.2); 
+            background: var(--main-active); color: #ffffff; border-color: #8b5cf6; border-bottom-color: #7c3aed;
+            box-shadow: 0 0 25px rgba(167, 139, 250, 0.7), inset 0 2px 10px rgba(255, 255, 255, 0.4); 
         }
         .key.black.active.main { 
-            background: linear-gradient(to bottom, var(--main-active), #6d28d9); color: #ffffff; border-color: #4c1d95; 
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.5);
+            background: linear-gradient(to bottom, #c084fc, var(--main-active)); color: #ffffff; border-color: #7c3aed; 
+            box-shadow: 0 5px 20px rgba(167, 139, 250, 0.8);
         }
         
-        /* OCTAVA SUPERIOR */
         .key.white.active.upper { 
-            background: var(--upper-active); color: #e4e4e7; border-color: #881337; border-bottom-color: #4c0519;
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
+            background: var(--upper-active); color: #ffffff; border-color: #f43f5e; border-bottom-color: #e11d48;
+            box-shadow: 0 0 15px rgba(251, 113, 133, 0.5), inset 0 2px 10px rgba(255, 255, 255, 0.3);
         }
         .key.black.active.upper { 
-            background: linear-gradient(to bottom, #e11d48, var(--upper-active)); color: #e4e4e7; border-color: #881337; border-bottom-color: #4c0519;
-            box-shadow: 2px 5px 10px rgba(0,0,0,0.7);
+            background: linear-gradient(to bottom, #fda4af, var(--upper-active)); color: #ffffff; border-color: #e11d48;
+            box-shadow: 0 5px 15px rgba(251, 113, 133, 0.6);
         }
         
-        /* OCTAVA INFERIOR */
         .key.white.active.lower { 
-            background: var(--lower-active); color: #e4e4e7; border-color: #3730a3; border-bottom-color: #1e1b4b;
-            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
+            background: var(--lower-active); color: #ffffff; border-color: #6366f1; border-bottom-color: #4f46e5;
+            box-shadow: 0 0 15px rgba(129, 140, 248, 0.5), inset 0 2px 10px rgba(255, 255, 255, 0.3);
         }
         .key.black.active.lower { 
-            background: linear-gradient(to bottom, #4f46e5, var(--lower-active)); color: #e4e4e7; border-color: #312e81; border-bottom-color: #1e1b4b;
-            box-shadow: 2px 5px 10px rgba(0,0,0,0.7);
+            background: linear-gradient(to bottom, #a5b4fc, var(--lower-active)); color: #ffffff; border-color: #4f46e5;
+            box-shadow: 0 5px 15px rgba(129, 140, 248, 0.6);
         }
         
         .key:active { transform: translateY(2px); border-bottom-width: 2px; }
@@ -260,19 +292,90 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* 📱 OPTIMIZACIÓN AGRESIVA PARA CELULARES EN MODO VERTICAL */
+        @media (max-width: 768px) and (orientation: portrait) {
+            body {
+                padding: 15px 5px;
+                justify-content: flex-start;
+            }
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 5px;
+            }
+            .legend {
+                font-size: 11px;
+                gap: 10px;
+                padding: 6px 10px;
+                margin-bottom: 12px;
+            }
+            .controls {
+                gap: 8px;
+                margin-bottom: 15px;
+            }
+            select {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            .scale-title {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+            }
+            
+            .piano {
+                padding: 4px;
+            }
+            
+            /* Teclas mucho más compactas para que quepa la octava en pantallas estrechas */
+            .key.white {
+                width: 38px; 
+                height: 140px; 
+                margin-right: 1px;
+                border-radius: 0 0 4px 4px;
+            }
+            .key.black {
+                width: 24px;
+                height: 85px;
+                left: 27px; /* 38(blanca) + 1(margen) = 39. Centro unión = 38.5. 38.5 - 12(mitad negra) = 26.5 => 27px */
+                border-radius: 0 0 4px 4px;
+            }
+            
+            /* Ajuste de fuentes para las teclas pequeñas */
+            .key { padding-bottom: 8px; }
+            .degree { font-size: 14px; }
+            .note-name { font-size: 10px; margin-bottom: 2px; }
+            .key.black .degree { font-size: 12px; }
+            .key.black .note-name { font-size: 8px; }
+            
+            .footer-signature {
+                margin-top: 20px;
+                font-size: 0.75rem;
+            }
+        }
+
     </style>
 </head>
 <body>
 
-    <h1>Guía de Escalas Voces EcoWorship</h1>
+    <h1>Vocal TAB: Guía de Escalas</h1>
 
     <div class="legend">
         <span><div class="dot lower"></div> Graves (-1)</span>
         <span><div class="dot main"></div> Melodía (1)</span>
         <span><div class="dot upper"></div> Agudos (1+)</span>
+        <span><div class="dot tessitura"></div> Rango Vocal</span>
     </div>
 
     <div class="controls">
+        <select id="voice-selector">
+            <option value="none">Rango Vocal: Ninguno</option>
+            <option value="24,45">Soprano (C4 - A5)</option>
+            <option value="21,41">Mezzo-Soprano (A3 - F5)</option>
+            <option value="17,38">Contralto (F3 - D5)</option>
+            <option value="12,33">Tenor (C3 - A4)</option>
+            <option value="7,28">Barítono (G2 - E4)</option>
+            <option value="4,24">Bajo (E2 - C4)</option>
+        </select>
+
         <select id="note-selector">
             <option value="0" data-letter="C">Do (C)</option>
             <option value="2" data-letter="D">Re (D)</option>
@@ -316,13 +419,73 @@
 
     <script>
         let audioCtx;
+        
+        const pianoBuffers = {};
+        let isPianoLoaded = false;
+        let isPianoLoading = false;
+
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
 
+        async function loadRealPianoSamples() {
+            if (isPianoLoaded || isPianoLoading) return;
+            isPianoLoading = true;
+            initAudio();
+            
+            const notesToLoad = ['C2', 'C3', 'C4', 'C5', 'C6', 'C7'];
+            const baseUrl = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/acoustic_grand_piano-mp3/';
+
+            try {
+                const loadPromises = notesToLoad.map(async (note) => {
+                    const response = await fetch(baseUrl + note + '.mp3');
+                    const arrayBuffer = await response.arrayBuffer();
+                    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                    pianoBuffers[note] = audioBuffer;
+                });
+                
+                await Promise.all(loadPromises);
+                isPianoLoaded = true;
+            } catch (error) {
+                console.error("No se pudieron cargar los samples del piano. Se usará el sintetizador.", error);
+            }
+        }
+
+        document.body.addEventListener('pointerdown', loadRealPianoSamples, { once: true });
+
         function playSound(noteIndex) {
             initAudio();
             if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const now = audioCtx.currentTime;
+
+            if (isPianoLoaded) {
+                let closestCIndex = Math.floor(noteIndex / 12) * 12;
+                let semitonesDistance = noteIndex - closestCIndex;
+                let octave = (closestCIndex / 12) + 2;
+                
+                if (octave < 2) { octave = 2; semitonesDistance = noteIndex; }
+                if (octave > 7) { octave = 7; semitonesDistance = noteIndex - 60; }
+                
+                const sampleName = 'C' + octave;
+                const buffer = pianoBuffers[sampleName];
+
+                if (buffer) {
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = buffer;
+                    
+                    source.playbackRate.value = Math.pow(2, semitonesDistance / 12);
+                    
+                    const gainNode = audioCtx.createGain();
+                    gainNode.gain.setValueAtTime(1.5, now); 
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 3); 
+                    
+                    source.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    source.start(0);
+                    return; 
+                }
+            }
 
             const midiNote = 36 + noteIndex;
             const frequency = 440 * Math.pow(2, (midiNote - 69) / 12);
@@ -333,7 +496,6 @@
             oscillator.type = 'triangle'; 
             oscillator.frequency.value = frequency;
 
-            const now = audioCtx.currentTime;
             gainNode.gain.setValueAtTime(0, now);
             gainNode.gain.linearRampToValueAtTime(0.6, now + 0.02); 
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5); 
@@ -356,28 +518,15 @@
         const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
         
         const intervalToDiatonicStep = {
-            0: 0, 
-            1: 1, 2: 1, 
-            3: 2, 4: 2, 
-            5: 3, 6: 3, 
-            7: 4, 
-            8: 5, 9: 5, 
-            10: 6, 11: 6 
+            0: 0, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 
+            7: 4, 8: 5, 9: 5, 10: 6, 11: 6 
         };
 
         const pitchMap = {
-            0: ['C', 'B#', 'Dbb'],
-            1: ['Db', 'C#', 'Bx'],
-            2: ['D', 'Cx', 'Ebb'],
-            3: ['Eb', 'D#', 'Fbb'],
-            4: ['E', 'Fb', 'Dx'],
-            5: ['F', 'E#', 'Gbb'],
-            6: ['Gb', 'F#', 'Ex'],
-            7: ['G', 'Fx', 'Abb'],
-            8: ['Ab', 'G#'],
-            9: ['A', 'Gx', 'Bbb'],
-            10: ['Bb', 'A#', 'Cbb'],
-            11: ['B', 'Cb', 'Ax']
+            0: ['C', 'B#', 'Dbb'], 1: ['Db', 'C#', 'Bx'], 2: ['D', 'Cx', 'Ebb'],
+            3: ['Eb', 'D#', 'Fbb'], 4: ['E', 'Fb', 'Dx'], 5: ['F', 'E#', 'Gbb'],
+            6: ['Gb', 'F#', 'Ex'], 7: ['G', 'Fx', 'Abb'], 8: ['Ab', 'G#'],
+            9: ['A', 'Gx', 'Bbb'], 10: ['Bb', 'A#', 'Cbb'], 11: ['B', 'Cb', 'Ax']
         };
 
         const pianoContainer = document.getElementById('piano-container');
@@ -424,23 +573,53 @@
             }
         }
 
+        const voiceSelector = document.getElementById('voice-selector');
         const noteSelector = document.getElementById('note-selector');
         const accidentalSelector = document.getElementById('accidental-selector');
         const typeSelector = document.getElementById('type-selector');
         const octaveSelector = document.getElementById('octave-selector');
         const scaleTitle = document.getElementById('scale-title');
 
-        function centerPianoOnNote(noteIndex) {
-            const keyElement = document.querySelector(`.key[data-note="${noteIndex}"]`);
-            if (keyElement) {
-                const wrapperElement = keyElement.closest('.key-wrapper');
-                if (wrapperElement) {
-                    const scrollTarget = wrapperElement.offsetLeft - (scrollWrapper.clientWidth / 2) + (wrapperElement.clientWidth / 2);
-                    scrollWrapper.scrollTo({
-                        left: scrollTarget,
-                        behavior: 'smooth'
-                    });
-                }
+        // LÓGICA DE CENTRADO DINÁMICO
+        function centerPianoOnScale(rootIndex) {
+            const startKey = document.querySelector(`.key[data-note="${rootIndex}"]`);
+            const endKey = document.querySelector(`.key[data-note="${rootIndex + 12}"]`); 
+            
+            if (startKey && endKey) {
+                const startWrapper = startKey.closest('.key-wrapper');
+                const endWrapper = endKey.closest('.key-wrapper');
+                
+                const startPos = startWrapper.offsetLeft;
+                const endPos = endWrapper.offsetLeft + endWrapper.clientWidth;
+                
+                const centerPos = (startPos + endPos) / 2;
+                
+                const scrollTarget = centerPos - (scrollWrapper.clientWidth / 2);
+                scrollWrapper.scrollTo({
+                    left: scrollTarget,
+                    behavior: 'smooth'
+                });
+            } else if (startKey) {
+                const startWrapper = startKey.closest('.key-wrapper');
+                const scrollTarget = startWrapper.offsetLeft - (scrollWrapper.clientWidth / 2) + (startWrapper.clientWidth / 2);
+                scrollWrapper.scrollTo({
+                    left: scrollTarget,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function renderTessitura() {
+            document.querySelectorAll('.key').forEach(key => key.classList.remove('tessitura'));
+            
+            const range = voiceSelector.value;
+            if (range === 'none') return;
+
+            const [min, max] = range.split(',').map(Number);
+            
+            for(let i = min; i <= max; i++) {
+                const key = document.querySelector(`.key[data-note="${i}"]`);
+                if(key) key.classList.add('tessitura');
             }
         }
 
@@ -499,8 +678,11 @@
                 });
             }
 
+            renderTessitura();
+
+            // Centra la octava cada vez que se repinta la escala
             const mainTonicIndex = (baseOctave * 12) + rootPitch;
-            setTimeout(() => centerPianoOnNote(mainTonicIndex), 50); 
+            setTimeout(() => centerPianoOnScale(mainTonicIndex), 50); 
         }
 
         window.addEventListener('resize', () => {
@@ -509,6 +691,7 @@
             }, 150); 
         });
 
+        voiceSelector.addEventListener('change', renderScale);
         noteSelector.addEventListener('change', renderScale);
         accidentalSelector.addEventListener('change', renderScale);
         typeSelector.addEventListener('change', renderScale);
