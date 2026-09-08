@@ -98,10 +98,18 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        #voice-selector {
+        #voice-selector, #main-instrument {
             flex: 1 1 100%;
+        }
+        
+        #voice-selector {
             border-color: rgba(56, 189, 248, 0.3);
             color: #bae6fd;
+        }
+        
+        #main-instrument {
+            border-color: rgba(167, 139, 250, 0.3);
+            color: #ddd6fe;
         }
 
         select:focus {
@@ -511,6 +519,13 @@
             <option value="4,24">Bajo (E2 - C4)</option>
         </select>
 
+        <!-- NUEVO: Selector de instrumento principal para las teclas -->
+        <select id="main-instrument">
+            <option value="acoustic_grand_piano" selected>Melodía: Grand Piano</option>
+            <option value="electric_piano_1">Melodía: Rhodes</option>
+            <option value="mixed_piano">Melodía: Piano + Rhodes</option>
+        </select>
+
         <select id="note-selector">
             <option value="0" data-letter="C">Do (C)</option>
             <option value="2" data-letter="D">Re (D)</option>
@@ -561,9 +576,9 @@
             <h3>Acompañamiento</h3>
             <div class="accomp-controls-group">
                 <select id="accomp-instrument">
-                    <option value="mixed_piano" selected>Piano + Rhodes (Worship)</option>
-                    <option value="acoustic_grand_piano">Solo Grand Piano</option>
-                    <option value="electric_piano_1">Solo Rhodes</option>
+                    <option value="electric_piano_1" selected>Acordes: Solo Rhodes</option>
+                    <option value="acoustic_grand_piano">Acordes: Solo Grand Piano</option>
+                    <option value="mixed_piano">Acordes: Piano + Rhodes</option>
                 </select>
                 <select id="accomp-octave">
                     <option value="0">Octava 1 (Graves)</option>
@@ -637,8 +652,7 @@
 
         const sustainToggle = document.getElementById('sustain-toggle');
 
-        // FUNCIÓN PRINCIPAL DE AUDIO CON SOPORTE PARA LAYERS (Mezcla)
-        function playSound(noteIndex, forceSustain = false, instrument = 'mixed_piano') {
+        function playSound(noteIndex, forceSustain = false, instrument = 'acoustic_grand_piano') {
             initAudio();
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
@@ -658,7 +672,6 @@
                 
                 const sampleName = 'C' + octave;
 
-                // Sub-función que dispara una capa de sonido específica con su propio porcentaje de volumen
                 const playBufferLayer = (instName, volumeRatio) => {
                     const buffer = audioBuffers[instName] && audioBuffers[instName][sampleName];
                     if (buffer) {
@@ -667,7 +680,6 @@
                         source.playbackRate.value = Math.pow(2, semitonesDistance / 12);
                         
                         const gainNode = audioCtx.createGain();
-                        // Volumen base (3.8) multiplicado por el ratio (100% o 70%)
                         gainNode.gain.setValueAtTime(3.8 * volumeRatio, now); 
                         gainNode.gain.exponentialRampToValueAtTime(0.001, now + realPianoDuration); 
                         
@@ -677,10 +689,9 @@
                     }
                 };
 
-                // Si se pide mezcla Worship, dispara ambos. Si no, dispara solo el elegido.
                 if (instrument === 'mixed_piano') {
-                    playBufferLayer('acoustic_grand_piano', 1.0); // Grand Piano al 100%
-                    playBufferLayer('electric_piano_1', 0.7);     // Rhodes al 70%
+                    playBufferLayer('acoustic_grand_piano', 1.0);
+                    playBufferLayer('electric_piano_1', 0.7);
                 } else {
                     playBufferLayer(instrument, 1.0);
                 }
@@ -688,7 +699,6 @@
                 return; 
             }
 
-            // FALLBACK: Sintetizador si aún no ha cargado el audio de internet
             const midiNote = 36 + noteIndex;
             const frequency = 440 * Math.pow(2, (midiNote - 69) / 12);
 
@@ -748,6 +758,7 @@
 
         const pianoContainer = document.getElementById('piano-container');
         const scrollWrapper = document.getElementById('scroll-wrapper');
+        const mainInstSelector = document.getElementById('main-instrument');
         
         const numOctaves = 5; 
         const totalNotes = numOctaves * 12 + 1; 
@@ -771,8 +782,7 @@
                 const whiteKey = document.createElement('div');
                 whiteKey.className = 'key white';
                 whiteKey.dataset.note = i;
-                // El teclado principal ahora siempre usa la mezcla "Worship" por defecto
-                whiteKey.addEventListener('pointerdown', () => playSound(i, false, 'mixed_piano'));
+                whiteKey.addEventListener('pointerdown', () => playSound(i, false, mainInstSelector.value));
                 bindPressEffect(whiteKey); 
                 wrapper.appendChild(whiteKey);
 
@@ -783,8 +793,7 @@
                     const blackKey = document.createElement('div');
                     blackKey.className = 'key black';
                     blackKey.dataset.note = nextNote;
-                    // El teclado principal ahora siempre usa la mezcla "Worship" por defecto
-                    blackKey.addEventListener('pointerdown', () => playSound(nextNote, false, 'mixed_piano'));
+                    blackKey.addEventListener('pointerdown', () => playSound(nextNote, false, mainInstSelector.value));
                     bindPressEffect(blackKey); 
                     wrapper.appendChild(blackKey);
                 }
