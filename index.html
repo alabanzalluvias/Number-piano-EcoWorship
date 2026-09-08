@@ -50,7 +50,7 @@
         .legend {
             display: flex;
             gap: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-size: 14px;
             font-weight: 600;
             color: #a1a1aa;
@@ -74,7 +74,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             justify-content: center;
             width: 100%;
             max-width: 600px;
@@ -113,6 +113,57 @@
         #voice-selector:focus {
             border-color: var(--tessitura-color);
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .sustain-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+        .sustain-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #d4d4d8;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #3f3f46;
+            transition: .4s;
+            border-radius: 26px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--main-active);
+            box-shadow: 0 0 12px rgba(167, 139, 250, 0.5);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
         }
 
         .scale-title {
@@ -168,7 +219,6 @@
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Dimensiones PC / Horizontal */
         .key.white {
             width: 48px; 
             height: 190px; 
@@ -273,6 +323,91 @@
         .key:active { transform: translateY(2px); border-bottom-width: 2px; }
         .key.black:active { border-bottom-width: 1px; }
 
+        .accomp-panel {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 10px;
+            background: rgba(24, 24, 27, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
+        .accomp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .accomp-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #e4e4e7;
+            font-weight: 700;
+        }
+        .accomp-controls-group {
+            display: flex;
+            gap: 10px;
+        }
+        .accomp-controls-group select {
+            padding: 8px 12px;
+            font-size: 13px;
+            min-width: auto;
+            margin: 0;
+        }
+        
+        .accomp-buttons {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 10px;
+            padding-bottom: 5px;
+        }
+        
+        .chord-btn {
+            flex: 1 1 20%; 
+            min-width: 70px;
+            max-width: 110px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 0;
+            background: linear-gradient(to bottom, #27272a, #18181b);
+            border: 1px solid #3f3f46;
+            border-bottom: 4px solid #000;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.1s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .chord-numeral {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+        .chord-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0.6;
+            margin-top: 2px;
+        }
+        .chord-btn:active, .chord-btn.pressed {
+            transform: translateY(3px);
+            border-bottom-width: 1px;
+            background: var(--main-active);
+            border-color: #7c3aed;
+            box-shadow: 0 0 15px rgba(167, 139, 250, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .chord-btn:active .chord-name, .chord-btn.pressed .chord-name {
+            opacity: 1;
+        }
+
         .footer-signature {
             margin-top: 40px;
             font-size: 0.85rem;
@@ -292,64 +427,64 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* 📱 OPTIMIZACIÓN AGRESIVA PARA CELULARES EN MODO VERTICAL */
         @media (max-width: 768px) and (orientation: portrait) {
-            body {
-                padding: 15px 5px;
-                justify-content: flex-start;
+            body { padding: 10px 5px; justify-content: flex-start; }
+            h1 { font-size: 1.4rem; margin-bottom: 5px; }
+            .legend { font-size: 11px; gap: 8px; padding: 4px 10px; margin-bottom: 10px; }
+            .controls { gap: 6px; margin-bottom: 10px; }
+            select { padding: 6px 10px; font-size: 13px; }
+            
+            .sustain-container { margin-bottom: 10px; }
+            .sustain-label { font-size: 13px; }
+            
+            .scale-title { font-size: 1rem; margin-bottom: 10px; }
+            
+            .piano { padding: 4px; }
+            .key.white { width: 36px; height: 130px; margin-right: 1px; border-radius: 0 0 4px 4px; }
+            .key.black { width: 22px; height: 80px; left: 26px; border-radius: 0 0 4px 4px; }
+            .key { padding-bottom: 6px; }
+            .degree { font-size: 13px; }
+            .note-name { font-size: 9px; margin-bottom: 2px; }
+            .key.black .degree { font-size: 11px; }
+            .key.black .note-name { font-size: 7px; }
+            
+            .accomp-panel {
+                padding: 10px;
+                margin-top: 5px;
             }
-            h1 {
-                font-size: 1.6rem;
-                margin-bottom: 5px;
+            .accomp-header { 
+                flex-direction: column; 
+                gap: 10px; 
+                margin-bottom: 12px; 
+                align-items: center;
             }
-            .legend {
-                font-size: 11px;
-                gap: 10px;
-                padding: 6px 10px;
-                margin-bottom: 12px;
+            .accomp-header h3 { font-size: 1.05rem; }
+            
+            .accomp-controls-group {
+                width: 100%;
+                display: flex;
+                gap: 5px;
             }
-            .controls {
-                gap: 8px;
-                margin-bottom: 15px;
-            }
-            select {
-                padding: 8px 12px;
-                font-size: 14px;
-            }
-            .scale-title {
-                font-size: 1.1rem;
-                margin-bottom: 15px;
+            .accomp-controls-group select { 
+                flex: 1; 
+                padding: 8px 5px; 
+                font-size: 11.5px; 
+                text-align: center;
             }
             
-            .piano {
-                padding: 4px;
-            }
+            .accomp-buttons { gap: 8px; }
             
-            /* Teclas mucho más compactas para que quepa la octava en pantallas estrechas */
-            .key.white {
-                width: 38px; 
-                height: 140px; 
-                margin-right: 1px;
-                border-radius: 0 0 4px 4px;
+            .chord-btn { 
+                flex: 1 1 25%; 
+                min-width: 55px; 
+                max-width: 90px;
+                padding: 8px 0; 
+                border-radius: 6px;
             }
-            .key.black {
-                width: 24px;
-                height: 85px;
-                left: 27px; /* 38(blanca) + 1(margen) = 39. Centro unión = 38.5. 38.5 - 12(mitad negra) = 26.5 => 27px */
-                border-radius: 0 0 4px 4px;
-            }
-            
-            /* Ajuste de fuentes para las teclas pequeñas */
-            .key { padding-bottom: 8px; }
-            .degree { font-size: 14px; }
-            .note-name { font-size: 10px; margin-bottom: 2px; }
-            .key.black .degree { font-size: 12px; }
-            .key.black .note-name { font-size: 8px; }
-            
-            .footer-signature {
-                margin-top: 20px;
-                font-size: 0.75rem;
-            }
+            .chord-numeral { font-size: 1.1rem; }
+            .chord-name { font-size: 0.75rem; margin-top: 1px; }
+
+            .footer-signature { margin-top: 15px; font-size: 0.75rem; }
         }
 
     </style>
@@ -407,10 +542,37 @@
         </select>
     </div>
 
+    <div class="sustain-container">
+        <label class="switch">
+            <input type="checkbox" id="sustain-toggle">
+            <span class="slider"></span>
+        </label>
+        <span class="sustain-label">Modo Sustain (Pedal)</span>
+    </div>
+
     <div id="scale-title" class="scale-title">Escala Mayor de C</div>
 
     <div class="piano-scroll-wrapper" id="scroll-wrapper">
         <div class="piano" id="piano-container"></div>
+    </div>
+
+    <div class="accomp-panel">
+        <div class="accomp-header">
+            <h3>Acompañamiento</h3>
+            <div class="accomp-controls-group">
+                <select id="accomp-instrument">
+                    <option value="mixed_piano" selected>Piano + Rhodes (Worship)</option>
+                    <option value="acoustic_grand_piano">Solo Grand Piano</option>
+                    <option value="electric_piano_1">Solo Rhodes</option>
+                </select>
+                <select id="accomp-octave">
+                    <option value="0">Octava 1 (Graves)</option>
+                    <option value="1" selected>Octava 2 (Medios)</option>
+                    <option value="2">Octava 3 (Agudos)</option>
+                </select>
+            </div>
+        </div>
+        <div id="accomp-buttons" class="accomp-buttons"></div>
     </div>
 
     <div class="footer-signature">
@@ -419,47 +581,74 @@
 
     <script>
         let audioCtx;
+        let masterCompressor;
         
-        const pianoBuffers = {};
-        let isPianoLoaded = false;
-        let isPianoLoading = false;
+        const audioBuffers = {
+            'acoustic_grand_piano': {},
+            'electric_piano_1': {}
+        };
+        let isAudioLoaded = false;
+        let isAudioLoading = false;
 
         function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-
-        async function loadRealPianoSamples() {
-            if (isPianoLoaded || isPianoLoading) return;
-            isPianoLoading = true;
-            initAudio();
-            
-            const notesToLoad = ['C2', 'C3', 'C4', 'C5', 'C6', 'C7'];
-            const baseUrl = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/acoustic_grand_piano-mp3/';
-
-            try {
-                const loadPromises = notesToLoad.map(async (note) => {
-                    const response = await fetch(baseUrl + note + '.mp3');
-                    const arrayBuffer = await response.arrayBuffer();
-                    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-                    pianoBuffers[note] = audioBuffer;
-                });
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 
-                await Promise.all(loadPromises);
-                isPianoLoaded = true;
-            } catch (error) {
-                console.error("No se pudieron cargar los samples del piano. Se usará el sintetizador.", error);
+                masterCompressor = audioCtx.createDynamicsCompressor();
+                masterCompressor.threshold.value = -5;
+                masterCompressor.knee.value = 15;
+                masterCompressor.ratio.value = 12;
+                masterCompressor.attack.value = 0.02;
+                masterCompressor.release.value = 0.25;
+                masterCompressor.connect(audioCtx.destination);
             }
         }
 
-        document.body.addEventListener('pointerdown', loadRealPianoSamples, { once: true });
+        async function loadRealAudioSamples() {
+            if (isAudioLoaded || isAudioLoading) return;
+            isAudioLoading = true;
+            initAudio();
+            
+            const notesToLoad = ['C2', 'C3', 'C4', 'C5', 'C6', 'C7'];
+            const instruments = ['acoustic_grand_piano', 'electric_piano_1'];
+            const baseUrl = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
 
-        function playSound(noteIndex) {
+            try {
+                const loadPromises = [];
+                
+                instruments.forEach(inst => {
+                    notesToLoad.forEach(note => {
+                        const p = fetch(`${baseUrl}${inst}-mp3/${note}.mp3`)
+                            .then(response => response.arrayBuffer())
+                            .then(ab => audioCtx.decodeAudioData(ab))
+                            .then(buffer => { audioBuffers[inst][note] = buffer; });
+                        loadPromises.push(p);
+                    });
+                });
+                
+                await Promise.all(loadPromises);
+                isAudioLoaded = true;
+            } catch (error) {
+                console.error("No se pudieron cargar los samples.", error);
+            }
+        }
+
+        document.body.addEventListener('pointerdown', loadRealAudioSamples, { once: true });
+
+        const sustainToggle = document.getElementById('sustain-toggle');
+
+        // FUNCIÓN PRINCIPAL DE AUDIO CON SOPORTE PARA LAYERS (Mezcla)
+        function playSound(noteIndex, forceSustain = false, instrument = 'mixed_piano') {
             initAudio();
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             const now = audioCtx.currentTime;
+            
+            const isSustain = forceSustain || sustainToggle.checked;
+            const realPianoDuration = isSustain ? 8 : 2;     
+            const synthPianoDuration = isSustain ? 5 : 1.2;  
 
-            if (isPianoLoaded) {
+            if (isAudioLoaded) {
                 let closestCIndex = Math.floor(noteIndex / 12) * 12;
                 let semitonesDistance = noteIndex - closestCIndex;
                 let octave = (closestCIndex / 12) + 2;
@@ -468,25 +657,38 @@
                 if (octave > 7) { octave = 7; semitonesDistance = noteIndex - 60; }
                 
                 const sampleName = 'C' + octave;
-                const buffer = pianoBuffers[sampleName];
 
-                if (buffer) {
-                    const source = audioCtx.createBufferSource();
-                    source.buffer = buffer;
-                    
-                    source.playbackRate.value = Math.pow(2, semitonesDistance / 12);
-                    
-                    const gainNode = audioCtx.createGain();
-                    gainNode.gain.setValueAtTime(1.5, now); 
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 3); 
-                    
-                    source.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-                    source.start(0);
-                    return; 
+                // Sub-función que dispara una capa de sonido específica con su propio porcentaje de volumen
+                const playBufferLayer = (instName, volumeRatio) => {
+                    const buffer = audioBuffers[instName] && audioBuffers[instName][sampleName];
+                    if (buffer) {
+                        const source = audioCtx.createBufferSource();
+                        source.buffer = buffer;
+                        source.playbackRate.value = Math.pow(2, semitonesDistance / 12);
+                        
+                        const gainNode = audioCtx.createGain();
+                        // Volumen base (3.8) multiplicado por el ratio (100% o 70%)
+                        gainNode.gain.setValueAtTime(3.8 * volumeRatio, now); 
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, now + realPianoDuration); 
+                        
+                        source.connect(gainNode);
+                        gainNode.connect(masterCompressor);
+                        source.start(0);
+                    }
+                };
+
+                // Si se pide mezcla Worship, dispara ambos. Si no, dispara solo el elegido.
+                if (instrument === 'mixed_piano') {
+                    playBufferLayer('acoustic_grand_piano', 1.0); // Grand Piano al 100%
+                    playBufferLayer('electric_piano_1', 0.7);     // Rhodes al 70%
+                } else {
+                    playBufferLayer(instrument, 1.0);
                 }
+                
+                return; 
             }
 
+            // FALLBACK: Sintetizador si aún no ha cargado el audio de internet
             const midiNote = 36 + noteIndex;
             const frequency = 440 * Math.pow(2, (midiNote - 69) / 12);
 
@@ -497,14 +699,14 @@
             oscillator.frequency.value = frequency;
 
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(0.6, now + 0.02); 
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5); 
+            gainNode.gain.linearRampToValueAtTime(1.3, now + 0.02); 
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + synthPianoDuration); 
 
             oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            gainNode.connect(masterCompressor);
 
             oscillator.start(now);
-            oscillator.stop(now + 1.5); 
+            oscillator.stop(now + synthPianoDuration); 
         }
 
         const formulas = {
@@ -527,6 +729,21 @@
             3: ['Eb', 'D#', 'Fbb'], 4: ['E', 'Fb', 'Dx'], 5: ['F', 'E#', 'Gbb'],
             6: ['Gb', 'F#', 'Ex'], 7: ['G', 'Fx', 'Abb'], 8: ['Ab', 'G#'],
             9: ['A', 'Gx', 'Bbb'], 10: ['Bb', 'A#', 'Cbb'], 11: ['B', 'Cb', 'Ax']
+        };
+
+        const chordTemplates = {
+            "Mayor": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
+            "Menor (Natural)": ["i", "ii°", "III", "iv", "v", "VI", "VII"],
+            "Menor (Armónica)": ["i", "ii°", "III+", "iv", "V", "VI", "vii°"],
+            "Pentatónica Mayor": ["I", "ii", "iii", "V", "vi"],
+            "Pentatónica Menor": ["i", "III", "iv", "v", "VII"]
+        };
+
+        const chordFormulas = {
+            "I": [0, 4, 7], "IV": [0, 4, 7], "V": [0, 4, 7], "III": [0, 4, 7], "VI": [0, 4, 7], "VII": [0, 4, 7],
+            "ii": [0, 3, 7], "iii": [0, 3, 7], "vi": [0, 3, 7], "i": [0, 3, 7], "iv": [0, 3, 7], "v": [0, 3, 7],
+            "vii°": [0, 3, 6], "ii°": [0, 3, 6],
+            "III+": [0, 4, 8]
         };
 
         const pianoContainer = document.getElementById('piano-container');
@@ -554,7 +771,8 @@
                 const whiteKey = document.createElement('div');
                 whiteKey.className = 'key white';
                 whiteKey.dataset.note = i;
-                whiteKey.addEventListener('pointerdown', () => playSound(i));
+                // El teclado principal ahora siempre usa la mezcla "Worship" por defecto
+                whiteKey.addEventListener('pointerdown', () => playSound(i, false, 'mixed_piano'));
                 bindPressEffect(whiteKey); 
                 wrapper.appendChild(whiteKey);
 
@@ -565,7 +783,8 @@
                     const blackKey = document.createElement('div');
                     blackKey.className = 'key black';
                     blackKey.dataset.note = nextNote;
-                    blackKey.addEventListener('pointerdown', () => playSound(nextNote));
+                    // El teclado principal ahora siempre usa la mezcla "Worship" por defecto
+                    blackKey.addEventListener('pointerdown', () => playSound(nextNote, false, 'mixed_piano'));
                     bindPressEffect(blackKey); 
                     wrapper.appendChild(blackKey);
                 }
@@ -579,8 +798,10 @@
         const typeSelector = document.getElementById('type-selector');
         const octaveSelector = document.getElementById('octave-selector');
         const scaleTitle = document.getElementById('scale-title');
+        
+        const accompOctaveSelector = document.getElementById('accomp-octave');
+        const accompInstSelector = document.getElementById('accomp-instrument');
 
-        // LÓGICA DE CENTRADO DINÁMICO
         function centerPianoOnScale(rootIndex) {
             const startKey = document.querySelector(`.key[data-note="${rootIndex}"]`);
             const endKey = document.querySelector(`.key[data-note="${rootIndex + 12}"]`); 
@@ -621,6 +842,72 @@
                 const key = document.querySelector(`.key[data-note="${i}"]`);
                 if(key) key.classList.add('tessitura');
             }
+        }
+
+        function renderAccompaniment() {
+            const accompContainer = document.getElementById('accomp-buttons');
+            accompContainer.innerHTML = ''; 
+            
+            const scaleType = typeSelector.value;
+            const currentFormula = formulas[scaleType]; 
+            
+            const basePitch = parseInt(noteSelector.value);
+            const accidentalOffset = parseInt(accidentalSelector.value);
+            const rootPitch = (basePitch + accidentalOffset + 12) % 12;
+            
+            const accompOctave = parseInt(accompOctaveSelector.value);
+            const accompRootIndex = (accompOctave * 12) + rootPitch;
+            
+            const chordsToGenerate = chordTemplates[scaleType];
+            
+            const selectedNoteOption = noteSelector.options[noteSelector.selectedIndex];
+            const rootLetter = selectedNoteOption.dataset.letter;
+            const rootLetterIndex = letters.indexOf(rootLetter);
+            
+            chordsToGenerate.forEach((chordNumeral, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'chord-btn';
+                
+                const intervalFromScaleRoot = currentFormula[index];
+                const chordRootIndex = accompRootIndex + intervalFromScaleRoot;
+                const chordTypeNotes = chordFormulas[chordNumeral];
+                
+                const diatonicStep = intervalToDiatonicStep[intervalFromScaleRoot];
+                const expectedLetterIndex = (rootLetterIndex + diatonicStep) % 7;
+                const expectedLetter = letters[expectedLetterIndex];
+                const actualPitch = chordRootIndex % 12;
+                
+                let rootNoteName = pitchMap[actualPitch].find(n => n.startsWith(expectedLetter));
+                if (!rootNoteName) rootNoteName = pitchMap[actualPitch][0]; 
+
+                let suffix = "";
+                if (chordNumeral.includes("°")) suffix = "dim";
+                else if (chordNumeral.includes("+")) suffix = "aug";
+                else if (chordNumeral === chordNumeral.toLowerCase()) suffix = "m"; 
+                
+                btn.innerHTML = `
+                    <div class="chord-numeral">${chordNumeral}</div>
+                    <div class="chord-name">${rootNoteName}${suffix}</div>
+                `;
+                
+                const playChord = () => {
+                    const selectedInst = accompInstSelector.value;
+                    chordTypeNotes.forEach(interval => {
+                        const noteToPlay = chordRootIndex + interval;
+                        playSound(noteToPlay, true, selectedInst); 
+                    });
+                };
+                
+                btn.addEventListener('pointerdown', () => {
+                    btn.classList.add('pressed');
+                    playChord();
+                });
+                btn.addEventListener('pointerup', () => btn.classList.remove('pressed'));
+                btn.addEventListener('pointerleave', () => btn.classList.remove('pressed'));
+                btn.addEventListener('pointercancel', () => btn.classList.remove('pressed'));
+                
+                accompContainer.appendChild(btn);
+            });
         }
 
         function renderScale() {
@@ -679,8 +966,8 @@
             }
 
             renderTessitura();
+            renderAccompaniment();
 
-            // Centra la octava cada vez que se repinta la escala
             const mainTonicIndex = (baseOctave * 12) + rootPitch;
             setTimeout(() => centerPianoOnScale(mainTonicIndex), 50); 
         }
@@ -696,6 +983,7 @@
         accidentalSelector.addEventListener('change', renderScale);
         typeSelector.addEventListener('change', renderScale);
         octaveSelector.addEventListener('change', renderScale);
+        accompOctaveSelector.addEventListener('change', renderAccompaniment);
 
         setTimeout(renderScale, 50);
     </script>
