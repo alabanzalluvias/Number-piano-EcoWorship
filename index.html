@@ -21,6 +21,7 @@
             --lower-active: #818cf8;  
             
             --tessitura-color: #38bdf8; 
+            --tuner-perfect: #22c55e; /* Verde brillante para afinación perfecta */
         }
 
         body {
@@ -102,36 +103,32 @@
             flex: 1 1 100%;
         }
         
-        #voice-selector {
-            border-color: rgba(56, 189, 248, 0.3);
-            color: #bae6fd;
-        }
-        
-        #main-instrument {
-            border-color: rgba(167, 139, 250, 0.3);
-            color: #ddd6fe;
-        }
+        #voice-selector { border-color: rgba(56, 189, 248, 0.3); color: #bae6fd; }
+        #main-instrument { border-color: rgba(167, 139, 250, 0.3); color: #ddd6fe; }
 
         select:focus {
             border-color: var(--main-active);
             box-shadow: 0 0 15px rgba(167, 139, 250, 0.3);
             transform: translateY(-2px);
         }
-        
-        #voice-selector:focus {
-            border-color: var(--tessitura-color);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-        }
 
-        .sustain-container {
+        /* --- CONTENEDORES DE SWITCHES (Sustain y Micrófono) --- */
+        .switches-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 25px;
+        }
+        
+        .switch-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 25px;
-            width: 100%;
+            gap: 10px;
         }
-        .sustain-label {
+        
+        .switch-label {
             font-size: 15px;
             font-weight: 600;
             color: #d4d4d8;
@@ -142,11 +139,7 @@
             width: 48px;
             height: 26px;
         }
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute;
             cursor: pointer;
@@ -166,12 +159,90 @@
             transition: .4s;
             border-radius: 50%;
         }
+        
+        /* Switch Genérico Activo */
         input:checked + .slider {
             background-color: var(--main-active);
             box-shadow: 0 0 12px rgba(167, 139, 250, 0.5);
         }
+        /* Switch Afinador Activo (Verde) */
+        #tuner-toggle:checked + .slider {
+            background-color: var(--tuner-perfect);
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+        }
+        
         input:checked + .slider:before {
             transform: translateX(22px);
+        }
+
+        /* --- NUEVO: MONITOR DE AFINACIÓN (TUNER) --- */
+        .tuner-panel {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(24, 24, 27, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: none; /* Oculto por defecto, se muestra al encender mic */
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+        .tuner-panel.active {
+            display: flex;
+        }
+        
+        .tuner-note-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #52525b; /* Gris oscuro cuando no hay voz */
+            line-height: 1;
+            margin-bottom: 10px;
+            transition: color 0.2s;
+            text-shadow: 0 0 15px transparent;
+        }
+        
+        .tuner-gauge {
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(90deg, 
+                rgba(239,68,68,0.3) 0%,   /* Rojo (Bemol) */
+                rgba(239,68,68,0.05) 35%, 
+                rgba(34,197,94,0.1) 48%,  /* Verde (Centro) */
+                rgba(34,197,94,0.3) 50%, 
+                rgba(34,197,94,0.1) 52%, 
+                rgba(234,179,8,0.05) 65%, 
+                rgba(234,179,8,0.3) 100%  /* Amarillo (Sostenido) */
+            );
+            border-radius: 10px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .tuner-needle {
+            position: absolute;
+            top: -4px;
+            bottom: -4px;
+            width: 4px;
+            background-color: #fff;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 0 8px #fff;
+            transition: left 0.1s linear, background-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .tuner-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #71717a;
+            text-transform: uppercase;
         }
 
         .scale-title {
@@ -207,10 +278,7 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
-        .key-wrapper {
-            position: relative;
-            display: flex; 
-        }
+        .key-wrapper { position: relative; display: flex; }
 
         .key {
             display: flex;
@@ -228,76 +296,59 @@
         }
 
         .key.white {
-            width: 48px; 
-            height: 190px; 
+            width: 48px; height: 190px; 
             background: linear-gradient(to bottom, #ffffff 0%, #f4f4f5 100%);
             color: var(--white-key-text); 
-            border: 1px solid #d4d4d8;
-            border-bottom: 4px solid #a1a1aa;
-            border-radius: 0 0 6px 6px;
-            margin-right: 2px;
+            border: 1px solid #d4d4d8; border-bottom: 4px solid #a1a1aa;
+            border-radius: 0 0 6px 6px; margin-right: 2px;
         }
 
         .key.black {
-            width: 32px;
-            height: 115px;
+            width: 32px; height: 115px;
             background: linear-gradient(to bottom, #18181b 0%, #09090b 100%);
             color: var(--black-key-text); 
-            position: absolute;
-            top: 0;
-            left: 33px; 
-            border-radius: 0 0 6px 6px;
-            z-index: 5; 
-            border: 1px solid #000000;
-            border-bottom: 3px solid #000000;
+            position: absolute; top: 0; left: 33px; 
+            border-radius: 0 0 6px 6px; z-index: 5; 
+            border: 1px solid #000000; border-bottom: 3px solid #000000;
             box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
         }
 
-        .key.tessitura::before {
+        /* EFECTO DE AFINACIÓN EN LA TECLA EN TIEMPO REAL */
+        .key.voice-active::after {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
-            border-top: 4px solid var(--tessitura-color);
+            background: rgba(34, 197, 94, 0.4);
+            box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.8), 0 0 15px rgba(34, 197, 94, 0.5);
             border-radius: inherit;
             pointer-events: none;
-            z-index: 2; 
+            z-index: 10;
         }
         
+        .key.black.voice-active::after {
+            background: rgba(34, 197, 94, 0.6);
+        }
+
+        .key.tessitura::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+            border-top: 4px solid var(--tessitura-color);
+            border-radius: inherit; pointer-events: none; z-index: 2; 
+        }
         .key.black.tessitura::before {
             border-top: 3px solid var(--tessitura-color);
             background: linear-gradient(to bottom, rgba(56, 189, 248, 0.3) 0%, transparent 60%);
         }
 
         .key.pressed::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.6);
-            border-radius: inherit;
-            pointer-events: none;
-            z-index: 3;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.3); box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.6);
+            border-radius: inherit; pointer-events: none; z-index: 3;
         }
 
-        .note-name, .degree {
-            pointer-events: none; 
-            z-index: 4; 
-            position: relative;
-        }
-
-        .note-name {
-            font-size: 12px;
-            font-weight: 700;
-            opacity: 0.9;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-        .degree {
-            font-size: 18px;
-            font-weight: 800;
-            line-height: 1;
-        }
+        .note-name, .degree { pointer-events: none; z-index: 4; position: relative; }
+        .note-name { font-size: 12px; font-weight: 700; opacity: 0.9; line-height: 1; margin-bottom: 4px; }
+        .degree { font-size: 18px; font-weight: 800; line-height: 1; }
         .key.black .note-name { font-size: 11px; margin-bottom: 3px; }
         .key.black .degree { font-size: 15px; }
         
@@ -332,107 +383,42 @@
         .key.black:active { border-bottom-width: 1px; }
 
         .accomp-panel {
-            width: 100%;
-            max-width: 1000px;
-            margin-top: 10px;
-            background: rgba(24, 24, 27, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            backdrop-filter: blur(10px);
-            box-sizing: border-box;
+            width: 100%; max-width: 1000px; margin-top: 10px;
+            background: rgba(24, 24, 27, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px; padding: 15px; backdrop-filter: blur(10px); box-sizing: border-box;
         }
-        .accomp-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .accomp-header h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: #e4e4e7;
-            font-weight: 700;
-        }
-        .accomp-controls-group {
-            display: flex;
-            gap: 10px;
-        }
-        .accomp-controls-group select {
-            padding: 8px 12px;
-            font-size: 13px;
-            min-width: auto;
-            margin: 0;
-        }
+        .accomp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .accomp-header h3 { margin: 0; font-size: 1.1rem; color: #e4e4e7; font-weight: 700; }
+        .accomp-controls-group { display: flex; gap: 10px; }
+        .accomp-controls-group select { padding: 8px 12px; font-size: 13px; min-width: auto; margin: 0; }
         
-        .accomp-buttons {
-            display: flex;
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 10px;
-            padding-bottom: 5px;
-        }
+        .accomp-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding-bottom: 5px; }
         
         .chord-btn {
-            flex: 1 1 20%; 
-            min-width: 70px;
-            max-width: 110px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 0;
-            background: linear-gradient(to bottom, #27272a, #18181b);
-            border: 1px solid #3f3f46;
-            border-bottom: 4px solid #000;
-            border-radius: 8px;
-            color: #f8fafc;
-            font-family: 'Outfit', sans-serif;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.1s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-            -webkit-tap-highlight-color: transparent;
+            flex: 1 1 20%; min-width: 70px; max-width: 110px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 12px 0;
+            background: linear-gradient(to bottom, #27272a, #18181b); border: 1px solid #3f3f46;
+            border-bottom: 4px solid #000; border-radius: 8px; color: #f8fafc;
+            font-family: 'Outfit', sans-serif; cursor: pointer; user-select: none;
+            transition: all 0.1s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent;
         }
-        .chord-numeral {
-            font-size: 1.3rem;
-            font-weight: 800;
-        }
-        .chord-name {
-            font-size: 0.8rem;
-            font-weight: 600;
-            opacity: 0.6;
-            margin-top: 2px;
-        }
+        .chord-numeral { font-size: 1.3rem; font-weight: 800; }
+        .chord-name { font-size: 0.8rem; font-weight: 600; opacity: 0.6; margin-top: 2px; }
         .chord-btn:active, .chord-btn.pressed {
-            transform: translateY(3px);
-            border-bottom-width: 1px;
-            background: var(--main-active);
-            border-color: #7c3aed;
-            box-shadow: 0 0 15px rgba(167, 139, 250, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.3);
+            transform: translateY(3px); border-bottom-width: 1px; background: var(--main-active);
+            border-color: #7c3aed; box-shadow: 0 0 15px rgba(167, 139, 250, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.3);
             color: white;
         }
-        .chord-btn:active .chord-name, .chord-btn.pressed .chord-name {
-            opacity: 1;
-        }
+        .chord-btn:active .chord-name, .chord-btn.pressed .chord-name { opacity: 1; }
 
         .footer-signature {
-            margin-top: 40px;
-            font-size: 0.85rem;
-            font-weight: 400;
-            color: #71717a;
-            letter-spacing: 0.5px;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
+            margin-top: 40px; font-size: 0.85rem; font-weight: 400; color: #71717a;
+            letter-spacing: 0.5px; opacity: 0.8; transition: opacity 0.3s ease;
         }
-        .footer-signature:hover {
-            opacity: 1;
-        }
+        .footer-signature:hover { opacity: 1; }
         .footer-signature .name {
-            font-weight: 700;
-            background: linear-gradient(135deg, #a78bfa, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 700; background: linear-gradient(135deg, #a78bfa, #f472b6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
         @media (max-width: 768px) and (orientation: portrait) {
@@ -442,8 +428,11 @@
             .controls { gap: 6px; margin-bottom: 10px; }
             select { padding: 6px 10px; font-size: 13px; }
             
-            .sustain-container { margin-bottom: 10px; }
-            .sustain-label { font-size: 13px; }
+            .switches-wrapper { gap: 15px; margin-bottom: 15px; flex-wrap: wrap;}
+            .switch-label { font-size: 13px; }
+            
+            .tuner-panel { padding: 10px 15px; margin-bottom: 15px; }
+            .tuner-note-display { font-size: 2rem; margin-bottom: 8px; }
             
             .scale-title { font-size: 1rem; margin-bottom: 10px; }
             
@@ -456,42 +445,15 @@
             .key.black .degree { font-size: 11px; }
             .key.black .note-name { font-size: 7px; }
             
-            .accomp-panel {
-                padding: 10px;
-                margin-top: 5px;
-            }
-            .accomp-header { 
-                flex-direction: column; 
-                gap: 10px; 
-                margin-bottom: 12px; 
-                align-items: center;
-            }
+            .accomp-panel { padding: 10px; margin-top: 5px; }
+            .accomp-header { flex-direction: column; gap: 10px; margin-bottom: 12px; align-items: center; }
             .accomp-header h3 { font-size: 1.05rem; }
-            
-            .accomp-controls-group {
-                width: 100%;
-                display: flex;
-                gap: 5px;
-            }
-            .accomp-controls-group select { 
-                flex: 1; 
-                padding: 8px 5px; 
-                font-size: 11.5px; 
-                text-align: center;
-            }
-            
+            .accomp-controls-group { width: 100%; display: flex; gap: 5px; }
+            .accomp-controls-group select { flex: 1; padding: 8px 5px; font-size: 11.5px; text-align: center; }
             .accomp-buttons { gap: 8px; }
-            
-            .chord-btn { 
-                flex: 1 1 25%; 
-                min-width: 55px; 
-                max-width: 90px;
-                padding: 8px 0; 
-                border-radius: 6px;
-            }
+            .chord-btn { flex: 1 1 25%; min-width: 55px; max-width: 90px; padding: 8px 0; border-radius: 6px; }
             .chord-numeral { font-size: 1.1rem; }
             .chord-name { font-size: 0.75rem; margin-top: 1px; }
-
             .footer-signature { margin-top: 15px; font-size: 0.75rem; }
         }
 
@@ -519,7 +481,6 @@
             <option value="4,24">Bajo (E2 - C4)</option>
         </select>
 
-        <!-- NUEVO: Selector de instrumento principal para las teclas -->
         <select id="main-instrument">
             <option value="acoustic_grand_piano" selected>Melodía: Grand Piano</option>
             <option value="electric_piano_1">Melodía: Rhodes</option>
@@ -557,12 +518,36 @@
         </select>
     </div>
 
-    <div class="sustain-container">
-        <label class="switch">
-            <input type="checkbox" id="sustain-toggle">
-            <span class="slider"></span>
-        </label>
-        <span class="sustain-label">Modo Sustain (Pedal)</span>
+    <!-- SWITCHES: Sustain y Micrófono -->
+    <div class="switches-wrapper">
+        <div class="switch-container">
+            <label class="switch">
+                <input type="checkbox" id="sustain-toggle">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">Sustain</span>
+        </div>
+        
+        <div class="switch-container">
+            <label class="switch">
+                <input type="checkbox" id="tuner-toggle">
+                <span class="slider"></span>
+            </label>
+            <span class="switch-label">Afinador (Mic)</span>
+        </div>
+    </div>
+
+    <!-- NUEVO: PANEL DEL AFINADOR -->
+    <div id="tuner-panel" class="tuner-panel">
+        <div id="tuner-note" class="tuner-note-display">--</div>
+        <div class="tuner-gauge">
+            <div id="tuner-needle" class="tuner-needle"></div>
+        </div>
+        <div class="tuner-labels">
+            <span>♭ Bemol</span>
+            <span>Perfecto</span>
+            <span>Sostenido ♯</span>
+        </div>
     </div>
 
     <div id="scale-title" class="scale-title">Escala Mayor de C</div>
@@ -595,6 +580,7 @@
     </div>
 
     <script>
+        // --- AUDIO ENGINE (SINTETIZADOR / SAMPLES) ---
         let audioCtx;
         let masterCompressor;
         
@@ -630,7 +616,6 @@
 
             try {
                 const loadPromises = [];
-                
                 instruments.forEach(inst => {
                     notesToLoad.forEach(note => {
                         const p = fetch(`${baseUrl}${inst}-mp3/${note}.mp3`)
@@ -657,7 +642,6 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             const now = audioCtx.currentTime;
-            
             const isSustain = forceSustain || sustainToggle.checked;
             const realPianoDuration = isSustain ? 8 : 2;     
             const synthPianoDuration = isSustain ? 5 : 1.2;  
@@ -695,7 +679,6 @@
                 } else {
                     playBufferLayer(instrument, 1.0);
                 }
-                
                 return; 
             }
 
@@ -719,6 +702,168 @@
             oscillator.stop(now + synthPianoDuration); 
         }
 
+        // --- SISTEMA DE AFINADOR CROMÁTICO (MICRÓFONO) ---
+        const tunerToggle = document.getElementById('tuner-toggle');
+        const tunerPanel = document.getElementById('tuner-panel');
+        const tunerNoteDisplay = document.getElementById('tuner-note');
+        const tunerNeedle = document.getElementById('tuner-needle');
+        
+        let audioStream = null;
+        let analyser = null;
+        let tunerAnimationId = null;
+        let buf = new Float32Array(2048);
+
+        // Nombres completos de las notas para el display del afinador
+        const noteNamesGlobal = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+        function startTuner() {
+            initAudio();
+            navigator.mediaDevices.getUserMedia({ audio: {
+                echoCancellation: false,
+                autoGainControl: false,
+                noiseSuppression: false
+            }}).then(stream => {
+                audioStream = stream;
+                const source = audioCtx.createMediaStreamSource(stream);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 2048;
+                source.connect(analyser);
+                tunerPanel.classList.add('active');
+                updateTuner();
+            }).catch(err => {
+                alert("Para usar el afinador, necesitas dar permisos de micrófono al navegador.");
+                tunerToggle.checked = false;
+            });
+        }
+
+        function stopTuner() {
+            if (audioStream) {
+                audioStream.getTracks().forEach(track => track.stop());
+                audioStream = null;
+            }
+            if (tunerAnimationId) {
+                cancelAnimationFrame(tunerAnimationId);
+            }
+            tunerPanel.classList.remove('active');
+            
+            // Limpiar teclas iluminadas por la voz
+            document.querySelectorAll('.key.voice-active').forEach(k => k.classList.remove('voice-active'));
+        }
+
+        tunerToggle.addEventListener('change', (e) => {
+            if (e.target.checked) startTuner();
+            else stopTuner();
+        });
+
+        // Algoritmo Yin simplificado / Autocorrelación para detección precisa de Pitch
+        function autoCorrelate(buf, sampleRate) {
+            let SIZE = buf.length;
+            let rms = 0;
+            for (let i = 0; i < SIZE; i++) {
+                let val = buf[i];
+                rms += val * val;
+            }
+            rms = Math.sqrt(rms / SIZE);
+            if (rms < 0.01) return -1; // Muy poco volumen (silencio)
+
+            let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+            for (let i = 0; i < SIZE / 2; i++)
+                if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+            for (let i = 1; i < SIZE / 2; i++)
+                if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+
+            buf = buf.slice(r1, r2);
+            SIZE = buf.length;
+
+            let c = new Array(SIZE).fill(0);
+            for (let i = 0; i < SIZE; i++)
+                for (let j = 0; j < SIZE - i; j++)
+                    c[i] = c[i] + buf[j] * buf[j + i];
+
+            let d = 0; while (c[d] > c[d + 1]) d++;
+            let maxval = -1, maxpos = -1;
+            for (let i = d; i < SIZE; i++) {
+                if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+            }
+            let T0 = maxpos;
+
+            let x0 = c[T0], x1 = c[T0 - 1], x2 = c[T0 + 1];
+            let a = (x1 + x2 - 2 * x0) / 2;
+            let b = (x2 - x1) / 2;
+            if (a) T0 = T0 - b / (2 * a);
+
+            return sampleRate / T0;
+        }
+
+        function updateTuner() {
+            analyser.getFloatTimeDomainData(buf);
+            const pitch = autoCorrelate(buf, audioCtx.sampleRate);
+
+            // Limpiamos las teclas pintadas en el ciclo anterior
+            document.querySelectorAll('.key.voice-active').forEach(k => k.classList.remove('voice-active'));
+
+            if (pitch !== -1) {
+                // Matemáticas de afinación
+                let note = Math.round(12 * (Math.log2(pitch / 440)) + 69);
+                // Evita detectar armónicos demasiado graves o agudos (falsos positivos)
+                if (note >= 24 && note <= 90) { 
+                    let targetFrequency = 440 * Math.pow(2, (note - 69) / 12);
+                    let cents = Math.floor(1200 * Math.log2(pitch / targetFrequency));
+                    
+                    // Actualizar Display del Afinador
+                    let noteName = noteNamesGlobal[note % 12];
+                    let octave = Math.floor(note / 12) - 1;
+                    tunerNoteDisplay.textContent = `${noteName}${octave}`;
+
+                    // Límite visual de cents entre -50 y +50
+                    let displayCents = Math.max(-50, Math.min(50, cents));
+                    // Convertir a porcentaje de 0% (Izquierda) a 100% (Derecha), siendo 50% el centro
+                    let leftPercent = displayCents + 50; 
+                    tunerNeedle.style.left = `${leftPercent}%`;
+
+                    // Colores de la aguja y del texto según precisión
+                    if (Math.abs(cents) <= 10) { // Perfecto (+- 10 cents)
+                        tunerNeedle.style.backgroundColor = '#22c55e'; // Verde
+                        tunerNeedle.style.boxShadow = '0 0 15px #22c55e';
+                        tunerNoteDisplay.style.color = '#22c55e';
+                        tunerNoteDisplay.style.textShadow = '0 0 20px rgba(34,197,94,0.4)';
+                    } else if (cents < -10) { // Bemol
+                        tunerNeedle.style.backgroundColor = '#ef4444'; // Rojo
+                        tunerNeedle.style.boxShadow = '0 0 15px #ef4444';
+                        tunerNoteDisplay.style.color = '#fca5a5';
+                        tunerNoteDisplay.style.textShadow = 'none';
+                    } else { // Sostenido
+                        tunerNeedle.style.backgroundColor = '#eab308'; // Amarillo
+                        tunerNeedle.style.boxShadow = '0 0 15px #eab308';
+                        tunerNoteDisplay.style.color = '#fde047';
+                        tunerNoteDisplay.style.textShadow = 'none';
+                    }
+
+                    // ILUMINAR LA TECLA DEL PIANO (Feedback Melódico)
+                    const pianoNoteIndex = note - 36; // Nuestro piano empieza en C2 (Midi 36)
+                    if (pianoNoteIndex >= 0 && pianoNoteIndex < totalNotes) {
+                        const targetKey = document.querySelector(`.key[data-note="${pianoNoteIndex}"]`);
+                        if (targetKey) {
+                            targetKey.classList.add('voice-active');
+                        }
+                    }
+                }
+            } else {
+                // Silencio
+                tunerNoteDisplay.textContent = "--";
+                tunerNoteDisplay.style.color = "#52525b";
+                tunerNoteDisplay.style.textShadow = 'none';
+                tunerNeedle.style.left = '50%';
+                tunerNeedle.style.backgroundColor = '#52525b';
+                tunerNeedle.style.boxShadow = 'none';
+            }
+
+            if (tunerToggle.checked) {
+                tunerAnimationId = requestAnimationFrame(updateTuner);
+            }
+        }
+
+        // --- LÓGICA DE ESCALAS Y ACOMPAÑAMIENTO (Sin cambios) ---
         const formulas = {
             "Mayor": [0, 2, 4, 5, 7, 9, 11],     
             "Menor (Natural)": [0, 2, 3, 5, 7, 8, 10],     
