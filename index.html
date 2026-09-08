@@ -21,7 +21,7 @@
             --lower-active: #818cf8;  
             
             --tessitura-color: #38bdf8; 
-            --tuner-perfect: #22c55e; /* Verde brillante para afinación perfecta */
+            --tuner-perfect: #22c55e; 
         }
 
         body {
@@ -99,10 +99,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        #voice-selector, #main-instrument {
-            flex: 1 1 100%;
-        }
-        
+        #voice-selector, #main-instrument { flex: 1 1 100%; }
         #voice-selector { border-color: rgba(56, 189, 248, 0.3); color: #bae6fd; }
         #main-instrument { border-color: rgba(167, 139, 250, 0.3); color: #ddd6fe; }
 
@@ -112,133 +109,114 @@
             transform: translateY(-2px);
         }
 
-        /* --- CONTENEDORES DE SWITCHES (Sustain y Micrófono) --- */
         .switches-wrapper {
             display: flex;
             justify-content: center;
             gap: 30px;
             width: 100%;
             max-width: 600px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
-        .switch-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .switch-label {
-            font-size: 15px;
-            font-weight: 600;
-            color: #d4d4d8;
-        }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 26px;
-        }
+        .switch-container { display: flex; align-items: center; gap: 10px; }
+        .switch-label { font-size: 15px; font-weight: 600; color: #d4d4d8; }
+        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #3f3f46;
-            transition: .4s;
-            border-radius: 26px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 26px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         
-        /* Switch Genérico Activo */
-        input:checked + .slider {
-            background-color: var(--main-active);
-            box-shadow: 0 0 12px rgba(167, 139, 250, 0.5);
-        }
-        /* Switch Afinador Activo (Verde) */
-        #tuner-toggle:checked + .slider {
-            background-color: var(--tuner-perfect);
-            box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(22px);
-        }
+        input:checked + .slider { background-color: var(--main-active); box-shadow: 0 0 12px rgba(167, 139, 250, 0.5); }
+        #tuner-toggle:checked + .slider { background-color: var(--tuner-perfect); box-shadow: 0 0 12px rgba(34, 197, 94, 0.5); }
+        input:checked + .slider:before { transform: translateX(22px); }
 
-        /* --- NUEVO: MONITOR DE AFINACIÓN (TUNER) --- */
+        /* --- NUEVO MONITOR: EL BLOQUE SUAVIZADO (BLOB) --- */
         .tuner-panel {
             width: 100%;
             max-width: 800px;
             background: rgba(24, 24, 27, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 15px 20px;
+            padding: 15px 25px;
             margin-bottom: 20px;
-            display: none; /* Oculto por defecto, se muestra al encender mic */
+            display: none; 
             flex-direction: column;
             align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
+            box-sizing: border-box;
         }
-        .tuner-panel.active {
-            display: flex;
-        }
+        .tuner-panel.active { display: flex; }
         
+        .tuner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
         .tuner-note-display {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #52525b; /* Gris oscuro cuando no hay voz */
+            color: #52525b; 
             line-height: 1;
-            margin-bottom: 10px;
             transition: color 0.2s;
-            text-shadow: 0 0 15px transparent;
         }
-        
-        .tuner-gauge {
+
+        .tuner-status {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #71717a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        /* Barra contenedora */
+        .tuner-gauge-blob {
             width: 100%;
-            height: 12px;
-            background: linear-gradient(90deg, 
-                rgba(239,68,68,0.3) 0%,   /* Rojo (Bemol) */
-                rgba(239,68,68,0.05) 35%, 
-                rgba(34,197,94,0.1) 48%,  /* Verde (Centro) */
-                rgba(34,197,94,0.3) 50%, 
-                rgba(34,197,94,0.1) 52%, 
-                rgba(234,179,8,0.05) 65%, 
-                rgba(234,179,8,0.3) 100%  /* Amarillo (Sostenido) */
-            );
-            border-radius: 10px;
+            height: 24px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 12px;
             position: relative;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid #3f3f46;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+            overflow: hidden;
         }
         
-        .tuner-needle {
+        /* Línea central perfecta */
+        .tuner-gauge-blob::before {
+            content: '';
             position: absolute;
-            top: -4px;
-            bottom: -4px;
-            width: 4px;
-            background-color: #fff;
+            left: 50%;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        /* La píldora que se mueve */
+        .tuner-blob {
+            position: absolute;
+            top: 3px; bottom: 3px;
+            width: 44px;
+            border-radius: 10px;
             left: 50%;
             transform: translateX(-50%);
-            border-radius: 2px;
-            box-shadow: 0 0 8px #fff;
-            transition: left 0.1s linear, background-color 0.2s, box-shadow 0.2s;
+            background-color: #52525b;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: background-color 0.2s, box-shadow 0.2s;
+            z-index: 2;
         }
         
         .tuner-labels {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            margin-top: 5px;
+            margin-top: 8px;
             font-size: 11px;
             font-weight: 700;
             color: #71717a;
@@ -256,84 +234,55 @@
         }
 
         .piano-scroll-wrapper {
-            width: 100%;
-            max-width: 1000px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 20px; 
-            scrollbar-width: thin;
-            scrollbar-color: #52525b transparent;
+            width: 100%; max-width: 1000px; overflow-x: auto;
+            -webkit-overflow-scrolling: touch; padding-bottom: 20px; 
+            scrollbar-width: thin; scrollbar-color: #52525b transparent;
         }
 
         .piano {
-            display: flex;
-            position: relative;
-            background: var(--piano-bg);
-            padding: 6px;
-            border-radius: 12px;
-            width: max-content;
-            margin: 0 auto;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
+            display: flex; position: relative; background: var(--piano-bg);
+            padding: 6px; border-radius: 12px; width: max-content; margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
         .key-wrapper { position: relative; display: flex; }
 
         .key {
-            display: flex;
-            position: relative; 
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            padding-bottom: 12px; 
-            box-sizing: border-box;
-            user-select: none;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent; 
-            touch-action: pan-x pan-y; 
+            display: flex; position: relative; flex-direction: column;
+            justify-content: flex-end; align-items: center; padding-bottom: 12px; 
+            box-sizing: border-box; user-select: none; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; touch-action: pan-x pan-y; 
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .key.white {
             width: 48px; height: 190px; 
             background: linear-gradient(to bottom, #ffffff 0%, #f4f4f5 100%);
-            color: var(--white-key-text); 
-            border: 1px solid #d4d4d8; border-bottom: 4px solid #a1a1aa;
-            border-radius: 0 0 6px 6px; margin-right: 2px;
+            color: var(--white-key-text); border: 1px solid #d4d4d8;
+            border-bottom: 4px solid #a1a1aa; border-radius: 0 0 6px 6px; margin-right: 2px;
         }
 
         .key.black {
             width: 32px; height: 115px;
             background: linear-gradient(to bottom, #18181b 0%, #09090b 100%);
-            color: var(--black-key-text); 
-            position: absolute; top: 0; left: 33px; 
-            border-radius: 0 0 6px 6px; z-index: 5; 
-            border: 1px solid #000000; border-bottom: 3px solid #000000;
-            box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
+            color: var(--black-key-text); position: absolute; top: 0; left: 33px; 
+            border-radius: 0 0 6px 6px; z-index: 5; border: 1px solid #000000;
+            border-bottom: 3px solid #000000; box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
         }
 
-        /* EFECTO DE AFINACIÓN EN LA TECLA EN TIEMPO REAL */
         .key.voice-active::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(34, 197, 94, 0.4);
             box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.8), 0 0 15px rgba(34, 197, 94, 0.5);
-            border-radius: inherit;
-            pointer-events: none;
-            z-index: 10;
+            border-radius: inherit; pointer-events: none; z-index: 10;
         }
-        
-        .key.black.voice-active::after {
-            background: rgba(34, 197, 94, 0.6);
-        }
+        .key.black.voice-active::after { background: rgba(34, 197, 94, 0.6); }
 
         .key.tessitura::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(to bottom, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
-            border-top: 4px solid var(--tessitura-color);
-            border-radius: inherit; pointer-events: none; z-index: 2; 
+            border-top: 4px solid var(--tessitura-color); border-radius: inherit; pointer-events: none; z-index: 2; 
         }
         .key.black.tessitura::before {
             border-top: 3px solid var(--tessitura-color);
@@ -352,74 +301,31 @@
         .key.black .note-name { font-size: 11px; margin-bottom: 3px; }
         .key.black .degree { font-size: 15px; }
         
-        .key.white.active.main { 
-            background: var(--main-active); color: #ffffff; border-color: #8b5cf6; border-bottom-color: #7c3aed;
-            box-shadow: 0 0 25px rgba(167, 139, 250, 0.7), inset 0 2px 10px rgba(255, 255, 255, 0.4); 
-        }
-        .key.black.active.main { 
-            background: linear-gradient(to bottom, #c084fc, var(--main-active)); color: #ffffff; border-color: #7c3aed; 
-            box-shadow: 0 5px 20px rgba(167, 139, 250, 0.8);
-        }
-        
-        .key.white.active.upper { 
-            background: var(--upper-active); color: #ffffff; border-color: #f43f5e; border-bottom-color: #e11d48;
-            box-shadow: 0 0 15px rgba(251, 113, 133, 0.5), inset 0 2px 10px rgba(255, 255, 255, 0.3);
-        }
-        .key.black.active.upper { 
-            background: linear-gradient(to bottom, #fda4af, var(--upper-active)); color: #ffffff; border-color: #e11d48;
-            box-shadow: 0 5px 15px rgba(251, 113, 133, 0.6);
-        }
-        
-        .key.white.active.lower { 
-            background: var(--lower-active); color: #ffffff; border-color: #6366f1; border-bottom-color: #4f46e5;
-            box-shadow: 0 0 15px rgba(129, 140, 248, 0.5), inset 0 2px 10px rgba(255, 255, 255, 0.3);
-        }
-        .key.black.active.lower { 
-            background: linear-gradient(to bottom, #a5b4fc, var(--lower-active)); color: #ffffff; border-color: #4f46e5;
-            box-shadow: 0 5px 15px rgba(129, 140, 248, 0.6);
-        }
-        
+        .key.white.active.main { background: var(--main-active); color: #ffffff; border-color: #8b5cf6; border-bottom-color: #7c3aed; box-shadow: 0 0 25px rgba(167, 139, 250, 0.7), inset 0 2px 10px rgba(255, 255, 255, 0.4); }
+        .key.black.active.main { background: linear-gradient(to bottom, #c084fc, var(--main-active)); color: #ffffff; border-color: #7c3aed; box-shadow: 0 5px 20px rgba(167, 139, 250, 0.8); }
+        .key.white.active.upper { background: var(--upper-active); color: #ffffff; border-color: #f43f5e; border-bottom-color: #e11d48; box-shadow: 0 0 15px rgba(251, 113, 133, 0.5), inset 0 2px 10px rgba(255, 255, 255, 0.3); }
+        .key.black.active.upper { background: linear-gradient(to bottom, #fda4af, var(--upper-active)); color: #ffffff; border-color: #e11d48; box-shadow: 0 5px 15px rgba(251, 113, 133, 0.6); }
+        .key.white.active.lower { background: var(--lower-active); color: #ffffff; border-color: #6366f1; border-bottom-color: #4f46e5; box-shadow: 0 0 15px rgba(129, 140, 248, 0.5), inset 0 2px 10px rgba(255, 255, 255, 0.3); }
+        .key.black.active.lower { background: linear-gradient(to bottom, #a5b4fc, var(--lower-active)); color: #ffffff; border-color: #4f46e5; box-shadow: 0 5px 15px rgba(129, 140, 248, 0.6); }
         .key:active { transform: translateY(2px); border-bottom-width: 2px; }
         .key.black:active { border-bottom-width: 1px; }
 
-        .accomp-panel {
-            width: 100%; max-width: 1000px; margin-top: 10px;
-            background: rgba(24, 24, 27, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px; padding: 15px; backdrop-filter: blur(10px); box-sizing: border-box;
-        }
+        .accomp-panel { width: 100%; max-width: 1000px; margin-top: 10px; background: rgba(24, 24, 27, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 15px; backdrop-filter: blur(10px); box-sizing: border-box; }
         .accomp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .accomp-header h3 { margin: 0; font-size: 1.1rem; color: #e4e4e7; font-weight: 700; }
         .accomp-controls-group { display: flex; gap: 10px; }
         .accomp-controls-group select { padding: 8px 12px; font-size: 13px; min-width: auto; margin: 0; }
-        
         .accomp-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding-bottom: 5px; }
         
-        .chord-btn {
-            flex: 1 1 20%; min-width: 70px; max-width: 110px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; padding: 12px 0;
-            background: linear-gradient(to bottom, #27272a, #18181b); border: 1px solid #3f3f46;
-            border-bottom: 4px solid #000; border-radius: 8px; color: #f8fafc;
-            font-family: 'Outfit', sans-serif; cursor: pointer; user-select: none;
-            transition: all 0.1s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent;
-        }
+        .chord-btn { flex: 1 1 20%; min-width: 70px; max-width: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 0; background: linear-gradient(to bottom, #27272a, #18181b); border: 1px solid #3f3f46; border-bottom: 4px solid #000; border-radius: 8px; color: #f8fafc; font-family: 'Outfit', sans-serif; cursor: pointer; user-select: none; transition: all 0.1s; box-shadow: 0 4px 6px rgba(0,0,0,0.5); -webkit-tap-highlight-color: transparent; }
         .chord-numeral { font-size: 1.3rem; font-weight: 800; }
         .chord-name { font-size: 0.8rem; font-weight: 600; opacity: 0.6; margin-top: 2px; }
-        .chord-btn:active, .chord-btn.pressed {
-            transform: translateY(3px); border-bottom-width: 1px; background: var(--main-active);
-            border-color: #7c3aed; box-shadow: 0 0 15px rgba(167, 139, 250, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.3);
-            color: white;
-        }
+        .chord-btn:active, .chord-btn.pressed { transform: translateY(3px); border-bottom-width: 1px; background: var(--main-active); border-color: #7c3aed; box-shadow: 0 0 15px rgba(167, 139, 250, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.3); color: white; }
         .chord-btn:active .chord-name, .chord-btn.pressed .chord-name { opacity: 1; }
 
-        .footer-signature {
-            margin-top: 40px; font-size: 0.85rem; font-weight: 400; color: #71717a;
-            letter-spacing: 0.5px; opacity: 0.8; transition: opacity 0.3s ease;
-        }
+        .footer-signature { margin-top: 40px; font-size: 0.85rem; font-weight: 400; color: #71717a; letter-spacing: 0.5px; opacity: 0.8; transition: opacity 0.3s ease; }
         .footer-signature:hover { opacity: 1; }
-        .footer-signature .name {
-            font-weight: 700; background: linear-gradient(135deg, #a78bfa, #f472b6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
+        .footer-signature .name { font-weight: 700; background: linear-gradient(135deg, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         @media (max-width: 768px) and (orientation: portrait) {
             body { padding: 10px 5px; justify-content: flex-start; }
@@ -427,15 +333,17 @@
             .legend { font-size: 11px; gap: 8px; padding: 4px 10px; margin-bottom: 10px; }
             .controls { gap: 6px; margin-bottom: 10px; }
             select { padding: 6px 10px; font-size: 13px; }
-            
             .switches-wrapper { gap: 15px; margin-bottom: 15px; flex-wrap: wrap;}
             .switch-label { font-size: 13px; }
             
             .tuner-panel { padding: 10px 15px; margin-bottom: 15px; }
-            .tuner-note-display { font-size: 2rem; margin-bottom: 8px; }
+            .tuner-note-display { font-size: 2rem; }
+            .tuner-status { font-size: 0.85rem; }
+            
+            .tuner-gauge-blob { height: 20px; }
+            .tuner-blob { width: 34px; }
             
             .scale-title { font-size: 1rem; margin-bottom: 10px; }
-            
             .piano { padding: 4px; }
             .key.white { width: 36px; height: 130px; margin-right: 1px; border-radius: 0 0 4px 4px; }
             .key.black { width: 22px; height: 80px; left: 26px; border-radius: 0 0 4px 4px; }
@@ -456,7 +364,6 @@
             .chord-name { font-size: 0.75rem; margin-top: 1px; }
             .footer-signature { margin-top: 15px; font-size: 0.75rem; }
         }
-
     </style>
 </head>
 <body>
@@ -518,7 +425,6 @@
         </select>
     </div>
 
-    <!-- SWITCHES: Sustain y Micrófono -->
     <div class="switches-wrapper">
         <div class="switch-container">
             <label class="switch">
@@ -537,15 +443,20 @@
         </div>
     </div>
 
-    <!-- NUEVO: PANEL DEL AFINADOR -->
+    <!-- PANEL DEL AFINADOR CON BLOQUE SUAVIZADO (BLOB) -->
     <div id="tuner-panel" class="tuner-panel">
-        <div id="tuner-note" class="tuner-note-display">--</div>
-        <div class="tuner-gauge">
-            <div id="tuner-needle" class="tuner-needle"></div>
+        <div class="tuner-header">
+            <div id="tuner-note" class="tuner-note-display">--</div>
+            <div id="tuner-status" class="tuner-status">Esperando...</div>
         </div>
+        
+        <div class="tuner-gauge-blob">
+            <div id="tuner-blob" class="tuner-blob"></div>
+        </div>
+        
         <div class="tuner-labels">
             <span>♭ Bemol</span>
-            <span>Perfecto</span>
+            <span>Centro</span>
             <span>Sostenido ♯</span>
         </div>
     </div>
@@ -580,21 +491,16 @@
     </div>
 
     <script>
-        // --- AUDIO ENGINE (SINTETIZADOR / SAMPLES) ---
         let audioCtx;
         let masterCompressor;
         
-        const audioBuffers = {
-            'acoustic_grand_piano': {},
-            'electric_piano_1': {}
-        };
+        const audioBuffers = { 'acoustic_grand_piano': {}, 'electric_piano_1': {} };
         let isAudioLoaded = false;
         let isAudioLoading = false;
 
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
                 masterCompressor = audioCtx.createDynamicsCompressor();
                 masterCompressor.threshold.value = -5;
                 masterCompressor.knee.value = 15;
@@ -609,7 +515,6 @@
             if (isAudioLoaded || isAudioLoading) return;
             isAudioLoading = true;
             initAudio();
-            
             const notesToLoad = ['C2', 'C3', 'C4', 'C5', 'C6', 'C7'];
             const instruments = ['acoustic_grand_piano', 'electric_piano_1'];
             const baseUrl = 'https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/';
@@ -625,14 +530,12 @@
                         loadPromises.push(p);
                     });
                 });
-                
                 await Promise.all(loadPromises);
                 isAudioLoaded = true;
             } catch (error) {
-                console.error("No se pudieron cargar los samples.", error);
+                console.error("Error al cargar samples.", error);
             }
         }
-
         document.body.addEventListener('pointerdown', loadRealAudioSamples, { once: true });
 
         const sustainToggle = document.getElementById('sustain-toggle');
@@ -653,7 +556,6 @@
                 
                 if (octave < 2) { octave = 2; semitonesDistance = noteIndex; }
                 if (octave > 7) { octave = 7; semitonesDistance = noteIndex - 60; }
-                
                 const sampleName = 'C' + octave;
 
                 const playBufferLayer = (instName, volumeRatio) => {
@@ -662,11 +564,9 @@
                         const source = audioCtx.createBufferSource();
                         source.buffer = buffer;
                         source.playbackRate.value = Math.pow(2, semitonesDistance / 12);
-                        
                         const gainNode = audioCtx.createGain();
                         gainNode.gain.setValueAtTime(3.8 * volumeRatio, now); 
                         gainNode.gain.exponentialRampToValueAtTime(0.001, now + realPianoDuration); 
-                        
                         source.connect(gainNode);
                         gainNode.connect(masterCompressor);
                         source.start(0);
@@ -684,36 +584,38 @@
 
             const midiNote = 36 + noteIndex;
             const frequency = 440 * Math.pow(2, (midiNote - 69) / 12);
-
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
 
             oscillator.type = 'triangle'; 
             oscillator.frequency.value = frequency;
-
             gainNode.gain.setValueAtTime(0, now);
             gainNode.gain.linearRampToValueAtTime(1.3, now + 0.02); 
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + synthPianoDuration); 
 
             oscillator.connect(gainNode);
             gainNode.connect(masterCompressor);
-
             oscillator.start(now);
             oscillator.stop(now + synthPianoDuration); 
         }
 
-        // --- SISTEMA DE AFINADOR CROMÁTICO (MICRÓFONO) ---
+        // --- SISTEMA DE AFINADOR SUAVIZADO (BLOB / AUTO-TUNE STYLE) ---
         const tunerToggle = document.getElementById('tuner-toggle');
         const tunerPanel = document.getElementById('tuner-panel');
         const tunerNoteDisplay = document.getElementById('tuner-note');
-        const tunerNeedle = document.getElementById('tuner-needle');
+        const tunerStatusDisplay = document.getElementById('tuner-status');
+        const tunerBlob = document.getElementById('tuner-blob');
         
         let audioStream = null;
         let analyser = null;
         let tunerAnimationId = null;
         let buf = new Float32Array(2048);
+        
+        // El factor LERP suaviza el movimiento. 
+        // 0.1 es bastante suave. Si lo subes a 0.5 será más rápido y nervioso.
+        let smoothedCents = 0;
+        const lerpFactor = 0.1; 
 
-        // Nombres completos de las notas para el display del afinador
         const noteNamesGlobal = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
         function startTuner() {
@@ -728,7 +630,9 @@
                 analyser = audioCtx.createAnalyser();
                 analyser.fftSize = 2048;
                 source.connect(analyser);
+                
                 tunerPanel.classList.add('active');
+                smoothedCents = 0; 
                 updateTuner();
             }).catch(err => {
                 alert("Para usar el afinador, necesitas dar permisos de micrófono al navegador.");
@@ -745,8 +649,6 @@
                 cancelAnimationFrame(tunerAnimationId);
             }
             tunerPanel.classList.remove('active');
-            
-            // Limpiar teclas iluminadas por la voz
             document.querySelectorAll('.key.voice-active').forEach(k => k.classList.remove('voice-active'));
         }
 
@@ -755,7 +657,6 @@
             else stopTuner();
         });
 
-        // Algoritmo Yin simplificado / Autocorrelación para detección precisa de Pitch
         function autoCorrelate(buf, sampleRate) {
             let SIZE = buf.length;
             let rms = 0;
@@ -764,7 +665,7 @@
                 rms += val * val;
             }
             rms = Math.sqrt(rms / SIZE);
-            if (rms < 0.01) return -1; // Muy poco volumen (silencio)
+            if (rms < 0.01) return -1; 
 
             let r1 = 0, r2 = SIZE - 1, thres = 0.2;
             for (let i = 0; i < SIZE / 2; i++)
@@ -798,49 +699,52 @@
         function updateTuner() {
             analyser.getFloatTimeDomainData(buf);
             const pitch = autoCorrelate(buf, audioCtx.sampleRate);
-
-            // Limpiamos las teclas pintadas en el ciclo anterior
+            
             document.querySelectorAll('.key.voice-active').forEach(k => k.classList.remove('voice-active'));
 
             if (pitch !== -1) {
-                // Matemáticas de afinación
                 let note = Math.round(12 * (Math.log2(pitch / 440)) + 69);
-                // Evita detectar armónicos demasiado graves o agudos (falsos positivos)
                 if (note >= 24 && note <= 90) { 
                     let targetFrequency = 440 * Math.pow(2, (note - 69) / 12);
-                    let cents = Math.floor(1200 * Math.log2(pitch / targetFrequency));
+                    let rawCents = 1200 * Math.log2(pitch / targetFrequency);
                     
-                    // Actualizar Display del Afinador
+                    // Aplicar suavizado LERP al valor de cents
+                    smoothedCents = smoothedCents + (rawCents - smoothedCents) * lerpFactor;
+                    
                     let noteName = noteNamesGlobal[note % 12];
                     let octave = Math.floor(note / 12) - 1;
                     tunerNoteDisplay.textContent = `${noteName}${octave}`;
 
-                    // Límite visual de cents entre -50 y +50
-                    let displayCents = Math.max(-50, Math.min(50, cents));
-                    // Convertir a porcentaje de 0% (Izquierda) a 100% (Derecha), siendo 50% el centro
+                    // Limitar a +- 50 cents visuales
+                    let displayCents = Math.max(-50, Math.min(50, smoothedCents));
                     let leftPercent = displayCents + 50; 
-                    tunerNeedle.style.left = `${leftPercent}%`;
+                    
+                    // Mover la píldora suavemente
+                    tunerBlob.style.left = `${leftPercent}%`;
 
-                    // Colores de la aguja y del texto según precisión
-                    if (Math.abs(cents) <= 10) { // Perfecto (+- 10 cents)
-                        tunerNeedle.style.backgroundColor = '#22c55e'; // Verde
-                        tunerNeedle.style.boxShadow = '0 0 15px #22c55e';
+                    // Colores según precisión
+                    if (Math.abs(smoothedCents) <= 10) { 
+                        tunerBlob.style.backgroundColor = '#22c55e'; // Verde
+                        tunerBlob.style.boxShadow = '0 0 15px #22c55e';
                         tunerNoteDisplay.style.color = '#22c55e';
-                        tunerNoteDisplay.style.textShadow = '0 0 20px rgba(34,197,94,0.4)';
-                    } else if (cents < -10) { // Bemol
-                        tunerNeedle.style.backgroundColor = '#ef4444'; // Rojo
-                        tunerNeedle.style.boxShadow = '0 0 15px #ef4444';
+                        tunerStatusDisplay.textContent = "Perfecto";
+                        tunerStatusDisplay.style.color = '#22c55e';
+                    } else if (smoothedCents < -10) { 
+                        tunerBlob.style.backgroundColor = '#ef4444'; // Rojo
+                        tunerBlob.style.boxShadow = '0 0 15px #ef4444';
                         tunerNoteDisplay.style.color = '#fca5a5';
-                        tunerNoteDisplay.style.textShadow = 'none';
-                    } else { // Sostenido
-                        tunerNeedle.style.backgroundColor = '#eab308'; // Amarillo
-                        tunerNeedle.style.boxShadow = '0 0 15px #eab308';
+                        tunerStatusDisplay.textContent = "♭ Bemol";
+                        tunerStatusDisplay.style.color = '#fca5a5';
+                    } else { 
+                        tunerBlob.style.backgroundColor = '#eab308'; // Amarillo
+                        tunerBlob.style.boxShadow = '0 0 15px #eab308';
                         tunerNoteDisplay.style.color = '#fde047';
-                        tunerNoteDisplay.style.textShadow = 'none';
+                        tunerStatusDisplay.textContent = "Sostenido ♯";
+                        tunerStatusDisplay.style.color = '#fde047';
                     }
 
-                    // ILUMINAR LA TECLA DEL PIANO (Feedback Melódico)
-                    const pianoNoteIndex = note - 36; // Nuestro piano empieza en C2 (Midi 36)
+                    // Iluminar la tecla en el piano
+                    const pianoNoteIndex = note - 36; 
                     if (pianoNoteIndex >= 0 && pianoNoteIndex < totalNotes) {
                         const targetKey = document.querySelector(`.key[data-note="${pianoNoteIndex}"]`);
                         if (targetKey) {
@@ -849,13 +753,16 @@
                     }
                 }
             } else {
-                // Silencio
+                // Silencio: Devolver lentamente al centro y apagar colores
+                smoothedCents = smoothedCents * 0.9; 
                 tunerNoteDisplay.textContent = "--";
                 tunerNoteDisplay.style.color = "#52525b";
-                tunerNoteDisplay.style.textShadow = 'none';
-                tunerNeedle.style.left = '50%';
-                tunerNeedle.style.backgroundColor = '#52525b';
-                tunerNeedle.style.boxShadow = 'none';
+                tunerStatusDisplay.textContent = "Escuchando...";
+                tunerStatusDisplay.style.color = "#52525b";
+                
+                tunerBlob.style.left = '50%';
+                tunerBlob.style.backgroundColor = '#52525b';
+                tunerBlob.style.boxShadow = 'none';
             }
 
             if (tunerToggle.checked) {
@@ -863,7 +770,7 @@
             }
         }
 
-        // --- LÓGICA DE ESCALAS Y ACOMPAÑAMIENTO (Sin cambios) ---
+        // --- LÓGICA DE ESCALAS Y ACOMPAÑAMIENTO ---
         const formulas = {
             "Mayor": [0, 2, 4, 5, 7, 9, 11],     
             "Menor (Natural)": [0, 2, 3, 5, 7, 8, 10],     
@@ -873,19 +780,13 @@
         };
 
         const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-        
-        const intervalToDiatonicStep = {
-            0: 0, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 
-            7: 4, 8: 5, 9: 5, 10: 6, 11: 6 
-        };
-
+        const intervalToDiatonicStep = { 0:0, 1:1, 2:1, 3:2, 4:2, 5:3, 6:3, 7:4, 8:5, 9:5, 10:6, 11:6 };
         const pitchMap = {
             0: ['C', 'B#', 'Dbb'], 1: ['Db', 'C#', 'Bx'], 2: ['D', 'Cx', 'Ebb'],
             3: ['Eb', 'D#', 'Fbb'], 4: ['E', 'Fb', 'Dx'], 5: ['F', 'E#', 'Gbb'],
             6: ['Gb', 'F#', 'Ex'], 7: ['G', 'Fx', 'Abb'], 8: ['Ab', 'G#'],
             9: ['A', 'Gx', 'Bbb'], 10: ['Bb', 'A#', 'Cbb'], 11: ['B', 'Cb', 'Ax']
         };
-
         const chordTemplates = {
             "Mayor": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
             "Menor (Natural)": ["i", "ii°", "III", "iv", "v", "VI", "VII"],
@@ -893,18 +794,15 @@
             "Pentatónica Mayor": ["I", "ii", "iii", "V", "vi"],
             "Pentatónica Menor": ["i", "III", "iv", "v", "VII"]
         };
-
         const chordFormulas = {
             "I": [0, 4, 7], "IV": [0, 4, 7], "V": [0, 4, 7], "III": [0, 4, 7], "VI": [0, 4, 7], "VII": [0, 4, 7],
             "ii": [0, 3, 7], "iii": [0, 3, 7], "vi": [0, 3, 7], "i": [0, 3, 7], "iv": [0, 3, 7], "v": [0, 3, 7],
-            "vii°": [0, 3, 6], "ii°": [0, 3, 6],
-            "III+": [0, 4, 8]
+            "vii°": [0, 3, 6], "ii°": [0, 3, 6], "III+": [0, 4, 8]
         };
 
         const pianoContainer = document.getElementById('piano-container');
         const scrollWrapper = document.getElementById('scroll-wrapper');
         const mainInstSelector = document.getElementById('main-instrument');
-        
         const numOctaves = 5; 
         const totalNotes = numOctaves * 12 + 1; 
         const blackKeyIndices = [1, 3, 6, 8, 10]; 
@@ -952,46 +850,28 @@
         const typeSelector = document.getElementById('type-selector');
         const octaveSelector = document.getElementById('octave-selector');
         const scaleTitle = document.getElementById('scale-title');
-        
         const accompOctaveSelector = document.getElementById('accomp-octave');
         const accompInstSelector = document.getElementById('accomp-instrument');
 
         function centerPianoOnScale(rootIndex) {
             const startKey = document.querySelector(`.key[data-note="${rootIndex}"]`);
             const endKey = document.querySelector(`.key[data-note="${rootIndex + 12}"]`); 
-            
             if (startKey && endKey) {
                 const startWrapper = startKey.closest('.key-wrapper');
                 const endWrapper = endKey.closest('.key-wrapper');
-                
-                const startPos = startWrapper.offsetLeft;
-                const endPos = endWrapper.offsetLeft + endWrapper.clientWidth;
-                
-                const centerPos = (startPos + endPos) / 2;
-                
-                const scrollTarget = centerPos - (scrollWrapper.clientWidth / 2);
-                scrollWrapper.scrollTo({
-                    left: scrollTarget,
-                    behavior: 'smooth'
-                });
+                const centerPos = (startWrapper.offsetLeft + endWrapper.offsetLeft + endWrapper.clientWidth) / 2;
+                scrollWrapper.scrollTo({ left: centerPos - (scrollWrapper.clientWidth / 2), behavior: 'smooth' });
             } else if (startKey) {
                 const startWrapper = startKey.closest('.key-wrapper');
-                const scrollTarget = startWrapper.offsetLeft - (scrollWrapper.clientWidth / 2) + (startWrapper.clientWidth / 2);
-                scrollWrapper.scrollTo({
-                    left: scrollTarget,
-                    behavior: 'smooth'
-                });
+                scrollWrapper.scrollTo({ left: startWrapper.offsetLeft - (scrollWrapper.clientWidth / 2) + (startWrapper.clientWidth / 2), behavior: 'smooth' });
             }
         }
 
         function renderTessitura() {
             document.querySelectorAll('.key').forEach(key => key.classList.remove('tessitura'));
-            
             const range = voiceSelector.value;
             if (range === 'none') return;
-
             const [min, max] = range.split(',').map(Number);
-            
             for(let i = min; i <= max; i++) {
                 const key = document.querySelector(`.key[data-note="${i}"]`);
                 if(key) key.classList.add('tessitura');
@@ -1004,19 +884,14 @@
             
             const scaleType = typeSelector.value;
             const currentFormula = formulas[scaleType]; 
-            
             const basePitch = parseInt(noteSelector.value);
             const accidentalOffset = parseInt(accidentalSelector.value);
             const rootPitch = (basePitch + accidentalOffset + 12) % 12;
-            
             const accompOctave = parseInt(accompOctaveSelector.value);
             const accompRootIndex = (accompOctave * 12) + rootPitch;
             
             const chordsToGenerate = chordTemplates[scaleType];
-            
-            const selectedNoteOption = noteSelector.options[noteSelector.selectedIndex];
-            const rootLetter = selectedNoteOption.dataset.letter;
-            const rootLetterIndex = letters.indexOf(rootLetter);
+            const rootLetterIndex = letters.indexOf(noteSelector.options[noteSelector.selectedIndex].dataset.letter);
             
             chordsToGenerate.forEach((chordNumeral, index) => {
                 const btn = document.createElement('div');
@@ -1027,38 +902,20 @@
                 const chordTypeNotes = chordFormulas[chordNumeral];
                 
                 const diatonicStep = intervalToDiatonicStep[intervalFromScaleRoot];
-                const expectedLetterIndex = (rootLetterIndex + diatonicStep) % 7;
-                const expectedLetter = letters[expectedLetterIndex];
+                const expectedLetter = letters[(rootLetterIndex + diatonicStep) % 7];
                 const actualPitch = chordRootIndex % 12;
                 
-                let rootNoteName = pitchMap[actualPitch].find(n => n.startsWith(expectedLetter));
-                if (!rootNoteName) rootNoteName = pitchMap[actualPitch][0]; 
+                let rootNoteName = pitchMap[actualPitch].find(n => n.startsWith(expectedLetter)) || pitchMap[actualPitch][0]; 
 
-                let suffix = "";
-                if (chordNumeral.includes("°")) suffix = "dim";
-                else if (chordNumeral.includes("+")) suffix = "aug";
-                else if (chordNumeral === chordNumeral.toLowerCase()) suffix = "m"; 
+                let suffix = chordNumeral.includes("°") ? "dim" : chordNumeral.includes("+") ? "aug" : chordNumeral === chordNumeral.toLowerCase() ? "m" : ""; 
                 
-                btn.innerHTML = `
-                    <div class="chord-numeral">${chordNumeral}</div>
-                    <div class="chord-name">${rootNoteName}${suffix}</div>
-                `;
-                
-                const playChord = () => {
-                    const selectedInst = accompInstSelector.value;
-                    chordTypeNotes.forEach(interval => {
-                        const noteToPlay = chordRootIndex + interval;
-                        playSound(noteToPlay, true, selectedInst); 
-                    });
-                };
+                btn.innerHTML = `<div class="chord-numeral">${chordNumeral}</div><div class="chord-name">${rootNoteName}${suffix}</div>`;
                 
                 btn.addEventListener('pointerdown', () => {
                     btn.classList.add('pressed');
-                    playChord();
+                    chordTypeNotes.forEach(interval => playSound(chordRootIndex + interval, true, accompInstSelector.value));
                 });
-                btn.addEventListener('pointerup', () => btn.classList.remove('pressed'));
-                btn.addEventListener('pointerleave', () => btn.classList.remove('pressed'));
-                btn.addEventListener('pointercancel', () => btn.classList.remove('pressed'));
+                ['pointerup', 'pointerleave', 'pointercancel'].forEach(e => btn.addEventListener(e, () => btn.classList.remove('pressed')));
                 
                 accompContainer.appendChild(btn);
             });
@@ -1068,69 +925,31 @@
             const basePitch = parseInt(noteSelector.value);
             const accidentalOffset = parseInt(accidentalSelector.value);
             const rootPitch = (basePitch + accidentalOffset + 12) % 12;
-            
             const scaleType = typeSelector.value;
             const baseOctave = parseInt(octaveSelector.value);
             const currentFormula = formulas[scaleType];
-
-            const selectedNoteOption = noteSelector.options[noteSelector.selectedIndex];
-            const rootLetter = selectedNoteOption.dataset.letter;
-            const rootLetterIndex = letters.indexOf(rootLetter);
-            const accidentalChar = accidentalSelector.options[accidentalSelector.selectedIndex].dataset.char;
+            const rootLetterIndex = letters.indexOf(noteSelector.options[noteSelector.selectedIndex].dataset.letter);
             
-            scaleTitle.textContent = `Escala ${scaleType} de ${rootLetter}${accidentalChar}`;
+            scaleTitle.textContent = `Escala ${scaleType} de ${noteSelector.options[noteSelector.selectedIndex].dataset.letter}${accidentalSelector.options[accidentalSelector.selectedIndex].dataset.char}`;
 
-            document.querySelectorAll('.key').forEach(key => {
-                key.className = key.className.replace(/active|main|upper|lower/g, '').trim();
-                key.innerHTML = ''; 
-            });
+            document.querySelectorAll('.key').forEach(key => { key.className = key.className.replace(/active|main|upper|lower/g, '').trim(); key.innerHTML = ''; });
 
             for (let octOffset = -1; octOffset <= 1; octOffset++) {
                 const rootIndex = (baseOctave + octOffset) * 12 + rootPitch;
-                const activeNotes = currentFormula.map(interval => rootIndex + interval);
-
-                activeNotes.forEach((noteIndex, i) => {
+                currentFormula.map(interval => rootIndex + interval).forEach((noteIndex, i) => {
                     const keyElement = document.querySelector(`.key[data-note="${noteIndex}"]`);
-                    
                     if (keyElement) {
-                        keyElement.classList.add('active');
-                        
-                        const degreeNum = i + 1;
-                        let degreeText = degreeNum;
-                        if (octOffset === 1) degreeText = degreeNum + '+';
-                        else if (octOffset === -1) degreeText = '-' + degreeNum;
-
-                        const chromaticInterval = currentFormula[i];
-                        const diatonicStep = intervalToDiatonicStep[chromaticInterval];
-                        
-                        const expectedLetterIndex = (rootLetterIndex + diatonicStep) % 7;
-                        const expectedLetter = letters[expectedLetterIndex];
-                        const actualPitch = noteIndex % 12;
-                        
-                        let noteName = pitchMap[actualPitch].find(n => n.startsWith(expectedLetter));
-                        if (!noteName) noteName = pitchMap[actualPitch][0]; 
-
-                        if (octOffset === 0) keyElement.classList.add('main');
-                        else if (octOffset === 1) keyElement.classList.add('upper');
-                        else if (octOffset === -1) keyElement.classList.add('lower');
-
+                        keyElement.classList.add('active', octOffset === 0 ? 'main' : octOffset === 1 ? 'upper' : 'lower');
+                        let degreeText = (octOffset === 1) ? `${i+1}+` : (octOffset === -1) ? `-${i+1}` : `${i+1}`;
+                        const expectedLetter = letters[(rootLetterIndex + intervalToDiatonicStep[currentFormula[i]]) % 7];
+                        let noteName = pitchMap[noteIndex % 12].find(n => n.startsWith(expectedLetter)) || pitchMap[noteIndex % 12][0]; 
                         keyElement.innerHTML = `<span class="note-name">${noteName}</span><span class="degree">${degreeText}</span>`;
                     }
                 });
             }
-
-            renderTessitura();
-            renderAccompaniment();
-
-            const mainTonicIndex = (baseOctave * 12) + rootPitch;
-            setTimeout(() => centerPianoOnScale(mainTonicIndex), 50); 
+            renderTessitura(); renderAccompaniment();
+            setTimeout(() => centerPianoOnScale((baseOctave * 12) + rootPitch), 50); 
         }
-
-        window.addEventListener('resize', () => {
-            setTimeout(() => {
-                renderScale();
-            }, 150); 
-        });
 
         voiceSelector.addEventListener('change', renderScale);
         noteSelector.addEventListener('change', renderScale);
@@ -1138,7 +957,6 @@
         typeSelector.addEventListener('change', renderScale);
         octaveSelector.addEventListener('change', renderScale);
         accompOctaveSelector.addEventListener('change', renderAccompaniment);
-
         setTimeout(renderScale, 50);
     </script>
 </body>
