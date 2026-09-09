@@ -129,7 +129,7 @@
         #tuner-toggle:checked + .slider { background-color: var(--tuner-perfect); box-shadow: 0 0 12px rgba(34, 197, 94, 0.5); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* --- NUEVO MONITOR: EL BLOQUE SUAVIZADO (BLOB) --- */
+        /* --- MONITOR DE AFINACIÓN (BLOQUE SUAVIZADO) --- */
         .tuner-panel {
             width: 100%;
             max-width: 800px;
@@ -174,7 +174,6 @@
             border-radius: 8px;
         }
 
-        /* Barra contenedora */
         .tuner-gauge-blob {
             width: 100%;
             height: 24px;
@@ -186,7 +185,6 @@
             overflow: hidden;
         }
         
-        /* Línea central perfecta */
         .tuner-gauge-blob::before {
             content: '';
             position: absolute;
@@ -198,7 +196,6 @@
             z-index: 1;
         }
 
-        /* La píldora que se mueve */
         .tuner-blob {
             position: absolute;
             top: 3px; bottom: 3px;
@@ -271,13 +268,18 @@
             border-bottom: 3px solid #000000; box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
         }
 
+        /* --- CORRECCIÓN: ILUMINACIÓN DE TECLA DEL AFINADOR SIN SANGRADO EXTERIOR --- */
         .key.voice-active::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(34, 197, 94, 0.4);
-            box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.8), 0 0 15px rgba(34, 197, 94, 0.5);
+            /* Se eliminó la sombra exterior, ahora es únicamente interna (inset) para no invadir otras teclas */
+            box-shadow: inset 0 0 25px rgba(34, 197, 94, 0.9);
             border-radius: inherit; pointer-events: none; z-index: 10;
         }
-        .key.black.voice-active::after { background: rgba(34, 197, 94, 0.6); }
+        .key.black.voice-active::after { 
+            background: rgba(34, 197, 94, 0.6); 
+            box-shadow: inset 0 0 15px rgba(34, 197, 94, 0.9);
+        }
 
         .key.tessitura::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -418,10 +420,11 @@
             <option value="Pentatónica Menor">Pentatónica Menor</option>
         </select>
 
+        <!-- CORRECCIÓN DE TEXTOS DE OCTAVAS PARA COINCIDIR CON EL AFINADOR -->
         <select id="octave-selector">
-            <option value="1">Octava 2 (C2)</option>
-            <option value="2" selected>Octava 3 (Central)</option>
-            <option value="3">Octava 4 (C4)</option>
+            <option value="1">Octava 3 (C3)</option>
+            <option value="2" selected>Octava 4 (C4 Central)</option>
+            <option value="3">Octava 5 (C5)</option>
         </select>
     </div>
 
@@ -476,10 +479,11 @@
                     <option value="acoustic_grand_piano">Acordes: Solo Grand Piano</option>
                     <option value="mixed_piano">Acordes: Piano + Rhodes</option>
                 </select>
+                <!-- CORRECCIÓN DE TEXTOS DE OCTAVAS PARA ACOMPAÑAMIENTO -->
                 <select id="accomp-octave">
-                    <option value="0">Octava 1 (Graves)</option>
-                    <option value="1" selected>Octava 2 (Medios)</option>
-                    <option value="2">Octava 3 (Agudos)</option>
+                    <option value="0">Octava 2 (Graves)</option>
+                    <option value="1" selected>Octava 3 (Medios)</option>
+                    <option value="2">Octava 4 (Agudos)</option>
                 </select>
             </div>
         </div>
@@ -611,8 +615,6 @@
         let tunerAnimationId = null;
         let buf = new Float32Array(2048);
         
-        // El factor LERP suaviza el movimiento. 
-        // 0.1 es bastante suave. Si lo subes a 0.5 será más rápido y nervioso.
         let smoothedCents = 0;
         const lerpFactor = 0.1; 
 
@@ -708,42 +710,37 @@
                     let targetFrequency = 440 * Math.pow(2, (note - 69) / 12);
                     let rawCents = 1200 * Math.log2(pitch / targetFrequency);
                     
-                    // Aplicar suavizado LERP al valor de cents
                     smoothedCents = smoothedCents + (rawCents - smoothedCents) * lerpFactor;
                     
                     let noteName = noteNamesGlobal[note % 12];
                     let octave = Math.floor(note / 12) - 1;
                     tunerNoteDisplay.textContent = `${noteName}${octave}`;
 
-                    // Limitar a +- 50 cents visuales
                     let displayCents = Math.max(-50, Math.min(50, smoothedCents));
                     let leftPercent = displayCents + 50; 
                     
-                    // Mover la píldora suavemente
                     tunerBlob.style.left = `${leftPercent}%`;
 
-                    // Colores según precisión
                     if (Math.abs(smoothedCents) <= 10) { 
-                        tunerBlob.style.backgroundColor = '#22c55e'; // Verde
+                        tunerBlob.style.backgroundColor = '#22c55e'; 
                         tunerBlob.style.boxShadow = '0 0 15px #22c55e';
                         tunerNoteDisplay.style.color = '#22c55e';
                         tunerStatusDisplay.textContent = "Perfecto";
                         tunerStatusDisplay.style.color = '#22c55e';
                     } else if (smoothedCents < -10) { 
-                        tunerBlob.style.backgroundColor = '#ef4444'; // Rojo
+                        tunerBlob.style.backgroundColor = '#ef4444'; 
                         tunerBlob.style.boxShadow = '0 0 15px #ef4444';
                         tunerNoteDisplay.style.color = '#fca5a5';
                         tunerStatusDisplay.textContent = "♭ Bemol";
                         tunerStatusDisplay.style.color = '#fca5a5';
                     } else { 
-                        tunerBlob.style.backgroundColor = '#eab308'; // Amarillo
+                        tunerBlob.style.backgroundColor = '#eab308'; 
                         tunerBlob.style.boxShadow = '0 0 15px #eab308';
                         tunerNoteDisplay.style.color = '#fde047';
                         tunerStatusDisplay.textContent = "Sostenido ♯";
                         tunerStatusDisplay.style.color = '#fde047';
                     }
 
-                    // Iluminar la tecla en el piano
                     const pianoNoteIndex = note - 36; 
                     if (pianoNoteIndex >= 0 && pianoNoteIndex < totalNotes) {
                         const targetKey = document.querySelector(`.key[data-note="${pianoNoteIndex}"]`);
@@ -753,7 +750,6 @@
                     }
                 }
             } else {
-                // Silencio: Devolver lentamente al centro y apagar colores
                 smoothedCents = smoothedCents * 0.9; 
                 tunerNoteDisplay.textContent = "--";
                 tunerNoteDisplay.style.color = "#52525b";
@@ -770,7 +766,6 @@
             }
         }
 
-        // --- LÓGICA DE ESCALAS Y ACOMPAÑAMIENTO ---
         const formulas = {
             "Mayor": [0, 2, 4, 5, 7, 9, 11],     
             "Menor (Natural)": [0, 2, 3, 5, 7, 8, 10],     
