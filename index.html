@@ -129,7 +129,7 @@
         #tuner-toggle:checked + .slider { background-color: var(--tuner-perfect); box-shadow: 0 0 12px rgba(34, 197, 94, 0.5); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* --- MONITOR DE AFINACIÓN (BLOQUE SUAVIZADO) --- */
+        /* --- MONITOR DE AFINACIÓN --- */
         .tuner-panel {
             width: 100%;
             max-width: 800px;
@@ -258,7 +258,7 @@
             background: linear-gradient(to bottom, #ffffff 0%, #f4f4f5 100%);
             color: var(--white-key-text); border: 1px solid #d4d4d8;
             border-bottom: 4px solid #a1a1aa; border-radius: 0 0 6px 6px; margin-right: 2px;
-            z-index: 1; /* Nivel base. Vital para el encapsulamiento de luz */
+            z-index: 1; 
         }
 
         .key.black {
@@ -266,20 +266,16 @@
             background: linear-gradient(to bottom, #18181b 0%, #09090b 100%);
             color: var(--black-key-text); position: absolute; top: 0; left: 33px; 
             border-radius: 0 0 6px 6px; 
-            z-index: 5; /* Asegura que la negra está POR ENCIMA de cualquier brillo de la blanca */
+            z-index: 5; 
             border: 1px solid #000000;
             border-bottom: 3px solid #000000; box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
         }
 
-        /* --- CORRECCIÓN: ILUMINACIÓN VERDE POTENTE PERO ENCAPSULADA --- */
-        .key.voice-active {
-            border-color: #4ade80 !important; /* Forzamos borde neón visible */
-        }
+        .key.voice-active { border-color: #4ade80 !important; }
         
         .key.voice-active::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(34, 197, 94, 0.65) !important; /* Más opaco para que destaque sobre morado */
-            /* Mezcla de sombra interna y externa. La externa queda atrapada debajo de las teclas vecinas (z-index 5) */
+            background: rgba(34, 197, 94, 0.65) !important;
             box-shadow: inset 0 0 25px rgba(34, 197, 94, 1), 0 0 15px rgba(34, 197, 94, 0.5) !important;
             border-radius: inherit; pointer-events: none; 
             z-index: 10; 
@@ -622,7 +618,8 @@
         let buf = new Float32Array(2048);
         
         let smoothedCents = 0;
-        const lerpFactor = 0.1; 
+        // REDUCIDO DE 0.1 A 0.04 PARA MÁS ESTABILIDAD (La burbuja flotará más suave y lento)
+        const lerpFactor = 0.04; 
 
         const noteNamesGlobal = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
@@ -722,8 +719,10 @@
                     let octave = Math.floor(note / 12) - 1;
                     tunerNoteDisplay.textContent = `${noteName}${octave}`;
 
-                    let displayCents = Math.max(-50, Math.min(50, smoothedCents));
-                    let leftPercent = displayCents + 50; 
+                    // AMPLIADO EL RANGO VISUAL DE 50 A 75 CENTS PARA DAR MÁS "ESPACIO" VISUAL
+                    let displayCents = Math.max(-75, Math.min(75, smoothedCents));
+                    // Conversión al ancho de la barra (donde el rango total ahora es 150 cents)
+                    let leftPercent = ((displayCents + 75) / 150) * 100; 
                     
                     tunerBlob.style.left = `${leftPercent}%`;
 
@@ -756,7 +755,7 @@
                     }
                 }
             } else {
-                smoothedCents = smoothedCents * 0.9; 
+                smoothedCents = smoothedCents * 0.95; // Retorno al centro suave en silencios
                 tunerNoteDisplay.textContent = "--";
                 tunerNoteDisplay.style.color = "#52525b";
                 tunerStatusDisplay.textContent = "Escuchando...";
