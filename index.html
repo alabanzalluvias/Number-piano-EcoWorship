@@ -258,7 +258,7 @@
             background: linear-gradient(to bottom, #ffffff 0%, #f4f4f5 100%);
             color: var(--white-key-text); border: 1px solid #d4d4d8;
             border-bottom: 4px solid #a1a1aa; border-radius: 0 0 6px 6px; margin-right: 2px;
-            z-index: 1; /* Establece un contexto de apilamiento para que la luz interior no escape */
+            z-index: 1; /* Nivel base. Vital para el encapsulamiento de luz */
         }
 
         .key.black {
@@ -266,28 +266,28 @@
             background: linear-gradient(to bottom, #18181b 0%, #09090b 100%);
             color: var(--black-key-text); position: absolute; top: 0; left: 33px; 
             border-radius: 0 0 6px 6px; 
-            z-index: 5; /* Asegura que la tecla negra siempre esté por encima de la blanca */
+            z-index: 5; /* Asegura que la negra está POR ENCIMA de cualquier brillo de la blanca */
             border: 1px solid #000000;
             border-bottom: 3px solid #000000; box-shadow: 2px 5px 10px rgba(0,0,0,0.7); 
         }
 
-        /* --- CORRECCIÓN: LUZ DEL AFINADOR ENCAPSULADA --- */
+        /* --- CORRECCIÓN: ILUMINACIÓN VERDE POTENTE PERO ENCAPSULADA --- */
         .key.voice-active {
-            border-color: #22c55e; /* Borde verde para definir la forma de la tecla */
+            border-color: #4ade80 !important; /* Forzamos borde neón visible */
         }
         
         .key.voice-active::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(34, 197, 94, 0.3);
-            /* Sombra estrictamente interna */
-            box-shadow: inset 0 0 25px rgba(34, 197, 94, 0.8);
+            background: rgba(34, 197, 94, 0.65) !important; /* Más opaco para que destaque sobre morado */
+            /* Mezcla de sombra interna y externa. La externa queda atrapada debajo de las teclas vecinas (z-index 5) */
+            box-shadow: inset 0 0 25px rgba(34, 197, 94, 1), 0 0 15px rgba(34, 197, 94, 0.5) !important;
             border-radius: inherit; pointer-events: none; 
-            z-index: 3; /* Un nivel bajo para no superponer las teclas negras vecinas */
+            z-index: 10; 
         }
         
         .key.black.voice-active::after { 
-            background: rgba(34, 197, 94, 0.5); 
-            box-shadow: inset 0 0 15px rgba(34, 197, 94, 0.8);
+            background: rgba(34, 197, 94, 0.8) !important; 
+            box-shadow: inset 0 0 15px rgba(34, 197, 94, 1), 0 0 20px rgba(34, 197, 94, 0.6) !important;
         }
 
         .key.tessitura::before {
@@ -455,7 +455,6 @@
         </div>
     </div>
 
-    <!-- PANEL DEL AFINADOR CON BLOQUE SUAVIZADO (BLOB) -->
     <div id="tuner-panel" class="tuner-panel">
         <div class="tuner-header">
             <div id="tuner-note" class="tuner-note-display">--</div>
@@ -611,7 +610,6 @@
             oscillator.stop(now + synthPianoDuration); 
         }
 
-        // --- SISTEMA DE AFINADOR SUAVIZADO (BLOB / AUTO-TUNE STYLE) ---
         const tunerToggle = document.getElementById('tuner-toggle');
         const tunerPanel = document.getElementById('tuner-panel');
         const tunerNoteDisplay = document.getElementById('tuner-note');
