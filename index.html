@@ -481,11 +481,10 @@
             }
         }
 
-        // --- EFECTO REVERB OPTIMIZADO (Menos CPU para celulares) ---
         function initReverb() {
             if(reverbNode) return;
             reverbNode = audioCtx.createConvolver();
-            const duration = 3.0; // Reducido a 3s para evitar recargar el celular
+            const duration = 3.0; 
             const decay = 4.0;
             const length = audioCtx.sampleRate * duration;
             const buffer = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
@@ -497,7 +496,6 @@
                 right[i] = (Math.random() * 2 - 1) * multiplier;
             }
             reverbNode.buffer = buffer;
-            // La Reverb va al master
             reverbNode.connect(masterCompressor);
         }
 
@@ -540,13 +538,24 @@
             const synthPianoDuration = isSustain ? 5 : 1.2;  
 
             if (isAudioLoaded) {
-                let closestCIndex = Math.floor(noteIndex / 12) * 12;
-                let semitonesDistance = noteIndex - closestCIndex;
-                let octave = (closestCIndex / 12) + 2;
+                // --- MOTOR DE TRANSICIÓN SUAVE ENTRE OCTAVAS DE SAMPLES ---
+                // Determinamos qué sample base usar de forma inteligente para evitar saltos drásticos en B3/C4
+                let sampleOctave = Math.floor(noteIndex / 12) + 2;
+                if (sampleOctave < 2) sampleOctave = 2;
+                if (sampleOctave > 7) sampleOctave = 7;
                 
-                if (octave < 2) { octave = 2; semitonesDistance = noteIndex; }
-                if (octave > 7) { octave = 7; semitonesDistance = noteIndex - 60; }
-                const sampleName = 'C' + octave;
+                let baseNoteIndex = (sampleOctave - 2) * 12;
+                let semitonesDistance = noteIndex - baseNoteIndex;
+
+                // Si nos alejamos mucho del sample base hacia arriba (ej. tocando B3 usando el sample de C3),
+                // saltamos inteligentemente al sample de C4 antes para mantener la consistencia del timbre.
+                if (semitonesDistance > 7 && sampleOctave < 7) {
+                    sampleOctave++;
+                    baseNoteIndex = (sampleOctave - 2) * 12;
+                    semitonesDistance = noteIndex - baseNoteIndex;
+                }
+
+                const sampleName = 'C' + sampleOctave;
 
                 const playBufferLayer = (instName, volumeRatio) => {
                     const buffer = audioBuffers[instName] && audioBuffers[instName][sampleName];
@@ -558,8 +567,11 @@
                         source.playbackRate.value = Math.pow(2, correctedDistance / 12);
                         
                         const gainNode = audioCtx.createGain();
-                        gainNode.gain.setValueAtTime(3.8 * volumeRatio, now); 
+                        // Compensación suave de volumen para notas altas estiradas
+                        let stretchCompensation = (semitonesDistance > 5) ? 0.85 : 1.0;
+                        gainNode.gain.setValueAtTime(3.8 * volumeRatio * stretchCompensation, now); 
                         gainNode.gain.exponentialRampToValueAtTime(0.001, now + realPianoDuration); 
+                        
                         source.connect(gainNode);
                         gainNode.connect(masterCompressor);
                         source.start(0);
@@ -592,7 +604,7 @@
             oscillator.stop(now + synthPianoDuration); 
         }
 
-        // --- SISTEMA DE DRONE PADS WORSHIP (CROSSFADE LOOPER + DRY/WET) ---
+        // --- SISTEMA DE DRONE PADS (CROSSFADE LOOPER) ---
         let droneMasterGain;
         let activeDroneNodes = [];
         let currentDroneNote = null;
@@ -601,16 +613,13 @@
         function initDroneSystem() {
             if(droneMasterGain) return;
             droneMasterGain = audioCtx.createGain();
-            
             droneMasterGain.gain.value = droneVolumeSlider.value * 3.0; 
             
-            // Ruta limpia directa para presencia de volumen en celular
             const dryRoute = audioCtx.createGain();
             dryRoute.gain.value = 1.5; 
             droneMasterGain.connect(dryRoute);
             dryRoute.connect(masterCompressor);
 
-            // Ruta de ambiente a la iglesia virtual
             const wetRoute = audioCtx.createGain();
             wetRoute.gain.value = 3.0; 
             droneMasterGain.connect(wetRoute);
@@ -659,7 +668,6 @@
 
             const now = audioCtx.currentTime;
             
-            // LOOPER MATEMÁTICO: Cero Clics de MP3
             const createDroneLayer = (instName, midiTarget, volume) => {
                 let closestCIndex = Math.floor(midiTarget / 12) * 12;
                 let semitonesDistance = midiTarget - closestCIndex;
@@ -691,8 +699,6 @@
 
                 let playbackRateVal = Math.pow(2, (semitonesDistance + (SAMPLES_CORRECTION_CENTS / 100)) / 12);
                 let actualDuration = buffer.duration / playbackRateVal;
-                
-                // Hacemos que se cruce 1.5 segundos antes de terminar (Oculta el silencio del MP3)
                 let overlap = 1.5; 
                 if (overlap > actualDuration / 2) overlap = actualDuration / 2;
                 let loopInterval = actualDuration - overlap;
@@ -701,8 +707,6 @@
 
                 function schedule() {
                     if (state.stopped) return;
-                    
-                    // Solo programamos lo necesario para ahorrar RAM
                     while (nextStartTime < audioCtx.currentTime + 2.0) {
                         let source = audioCtx.createBufferSource();
                         source.buffer = buffer;
@@ -721,7 +725,6 @@
                         source.stop(nextStartTime + actualDuration);
                         
                         state.nodes.push({source: source, gain: gain});
-                        // Limpieza
                         if (state.nodes.length > 5) state.nodes.shift();
                         
                         nextStartTime += loopInterval;
