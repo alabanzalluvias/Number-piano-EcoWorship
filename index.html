@@ -129,7 +129,6 @@
         #tuner-toggle:checked + .slider { background-color: var(--tuner-perfect); box-shadow: 0 0 12px rgba(34, 197, 94, 0.5); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* --- MONITOR DE AFINACIÓN --- */
         .tuner-panel {
             width: 100%;
             max-width: 800px;
@@ -498,6 +497,10 @@
     </div>
 
     <script>
+        // --- CONFIGURACIÓN MAESTRA DE AFINACIÓN ---
+        const MASTER_TUNE_A = 440.0; // Frecuencia de calibración La4 estándar
+        const SAMPLES_CORRECTION_CENTS = -5; // Compensación para los mp3 que suelen ser ligeramente altos
+
         let audioCtx;
         let masterCompressor;
         
@@ -570,7 +573,11 @@
                     if (buffer) {
                         const source = audioCtx.createBufferSource();
                         source.buffer = buffer;
-                        source.playbackRate.value = Math.pow(2, semitonesDistance / 12);
+                        
+                        // CORRECCIÓN MAESTRA DE PITCH INYECTADA EN EL PLAYBACKRATE
+                        let correctedDistance = semitonesDistance + (SAMPLES_CORRECTION_CENTS / 100);
+                        source.playbackRate.value = Math.pow(2, correctedDistance / 12);
+                        
                         const gainNode = audioCtx.createGain();
                         gainNode.gain.setValueAtTime(3.8 * volumeRatio, now); 
                         gainNode.gain.exponentialRampToValueAtTime(0.001, now + realPianoDuration); 
@@ -589,8 +596,9 @@
                 return; 
             }
 
+            // Fallback sintético calibrado a la frecuencia maestra
             const midiNote = 36 + noteIndex;
-            const frequency = 440 * Math.pow(2, (midiNote - 69) / 12);
+            const frequency = MASTER_TUNE_A * Math.pow(2, (midiNote - 69) / 12);
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
 
@@ -618,8 +626,7 @@
         let buf = new Float32Array(2048);
         
         let smoothedCents = 0;
-        // REDUCIDO DE 0.1 A 0.04 PARA MÁS ESTABILIDAD (La burbuja flotará más suave y lento)
-        const lerpFactor = 0.04; 
+        const lerpFactor = 0.04; // Burbuja más lenta y estable
 
         const noteNamesGlobal = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
@@ -708,9 +715,9 @@
             document.querySelectorAll('.key.voice-active').forEach(k => k.classList.remove('voice-active'));
 
             if (pitch !== -1) {
-                let note = Math.round(12 * (Math.log2(pitch / 440)) + 69);
+                let note = Math.round(12 * (Math.log2(pitch / MASTER_TUNE_A)) + 69);
                 if (note >= 24 && note <= 90) { 
-                    let targetFrequency = 440 * Math.pow(2, (note - 69) / 12);
+                    let targetFrequency = MASTER_TUNE_A * Math.pow(2, (note - 69) / 12);
                     let rawCents = 1200 * Math.log2(pitch / targetFrequency);
                     
                     smoothedCents = smoothedCents + (rawCents - smoothedCents) * lerpFactor;
@@ -719,9 +726,8 @@
                     let octave = Math.floor(note / 12) - 1;
                     tunerNoteDisplay.textContent = `${noteName}${octave}`;
 
-                    // AMPLIADO EL RANGO VISUAL DE 50 A 75 CENTS PARA DAR MÁS "ESPACIO" VISUAL
+                    // AMPLIADO EL RANGO VISUAL A +-75 CENTS
                     let displayCents = Math.max(-75, Math.min(75, smoothedCents));
-                    // Conversión al ancho de la barra (donde el rango total ahora es 150 cents)
                     let leftPercent = ((displayCents + 75) / 150) * 100; 
                     
                     tunerBlob.style.left = `${leftPercent}%`;
@@ -755,7 +761,7 @@
                     }
                 }
             } else {
-                smoothedCents = smoothedCents * 0.95; // Retorno al centro suave en silencios
+                smoothedCents = smoothedCents * 0.95; 
                 tunerNoteDisplay.textContent = "--";
                 tunerNoteDisplay.style.color = "#52525b";
                 tunerStatusDisplay.textContent = "Escuchando...";
