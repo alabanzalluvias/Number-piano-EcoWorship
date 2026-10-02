@@ -148,61 +148,6 @@
         .vol-control { display: flex; align-items: center; gap: 8px; color: #a1a1aa; font-size: 0.85rem;}
         .vol-slider { width: 80px; accent-color: var(--tessitura-color); }
 
-        .main-action-bar { display: flex; justify-content: center; width: 100%; max-width: 600px; margin-bottom: 20px; margin-top: 30px;}
-        .toggle-arranger-btn { background: linear-gradient(135deg, #a78bfa, #818cf8); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-size: 1.1rem; font-weight: 700; font-family: 'Outfit'; cursor: pointer; box-shadow: 0 4px 15px rgba(167, 139, 250, 0.4); transition: transform 0.2s; width: 100%; }
-        .toggle-arranger-btn:active { transform: scale(0.98); }
-
-        /* --- SECUENCIADOR STEP RECORDER --- */
-        #arranger-module { display: none; border: 2px solid #a78bfa; background: rgba(15, 15, 20, 0.9); box-shadow: 0 10px 40px rgba(167, 139, 250, 0.2); }
-        .arranger-controls { display: flex; justify-content: center; gap: 15px; width: 100%; margin-bottom: 15px; flex-wrap: wrap; }
-        .arranger-btn { border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; font-family: 'Outfit'; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;}
-        .arranger-btn.play { background: #22c55e; color: white; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); }
-        .arranger-btn.stop { background: #ef4444; color: white; }
-        .arranger-btn:active { transform: translateY(2px); }
-        .tempo-input { background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #3f3f46; border-radius: 6px; padding: 8px; width: 70px; text-align: center; font-family: 'Outfit'; font-size: 1.1rem; font-weight: 700; }
-        
-        .sequencer-grid { background: rgba(10, 10, 12, 0.9); border: 1px solid #3f3f46; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-        .track { padding: 12px; border-bottom: 1px solid #27272a; position: relative; transition: opacity 0.3s; }
-        .track:last-child { border-bottom: none; }
-        
-        .track-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .track-title { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;}
-        .title-melody { color: #4ade80; }
-        .title-harmony { color: #f472b6; }
-        .title-chords { color: #facc15; }
-
-        .track-actions { display: flex; gap: 10px; align-items: center; }
-        
-        .mute-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
-        .mute-btn.active-mute { background: #ef4444; border-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
-
-        .rec-btn { background: #27272a; border: 1px solid #71717a; color: #a1a1aa; border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .rec-btn.active { background: #ef4444; border-color: #ef4444; color: white; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); animation: pulseRec 1.5s infinite; }
-        
-        .track-steps { display: flex; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; border-radius: 6px; border: 1px solid #3f3f46; background: rgba(0,0,0,0.3);}
-        .track-steps::-webkit-scrollbar { display: none; }
-        
-        .measure { display: flex; flex-shrink: 0;}
-        .measure:nth-child(even) { background: rgba(255, 255, 255, 0.05); } 
-        
-        .step-cell { 
-            width: 44px; height: 44px; text-align: center; border: none; 
-            border-right: 1px solid rgba(255,255,255,0.05); background: transparent; 
-            font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.2rem; 
-            color: inherit; outline: none; transition: background 0.1s;
-        }
-        .step-cell:last-child { border-right: none; }
-        .step-cell:focus { background: rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .step-cell.active-rec { background: rgba(239, 68, 68, 0.3); }
-
-        #track-melody .step-cell { color: #4ade80; }
-        #track-harmony .step-cell { color: #f472b6; }
-        #track-chords .step-cell { color: #facc15; }
-
-        .track.muted .track-steps { opacity: 0.3; }
-        .track.muted .step-cell { text-decoration: line-through; color: #71717a !important; }
-        .track.muted .track-title { opacity: 0.5; }
-
         @media (max-width: 768px) and (orientation: portrait) {
             body { padding: 10px 5px; justify-content: flex-start; }
             .app-header h1 { font-size: 2.6rem; }
@@ -236,15 +181,6 @@
             .action-btn { flex: 1 1 25%; min-width: 55px; max-width: 90px; padding: 8px 0; border-radius: 6px; }
             .action-btn .primary-text { font-size: 1.1rem; }
             .action-btn .secondary-text { font-size: 0.75rem; margin-top: 1px; }
-            
-            .main-action-bar { order: 99; margin-top: 20px; } 
-            #arranger-module { order: 100; } 
-            
-            .arranger-controls { gap: 8px; }
-            .arranger-btn { padding: 8px 12px; font-size: 0.95rem; }
-            .track-title { font-size: 0.85rem; }
-            .mute-btn { padding: 4px 8px; }
-            .step-cell { width: 38px; height: 38px; font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -397,60 +333,6 @@
         <div id="drone-buttons" class="btn-grid"></div>
     </div>
 
-    <div class="main-action-bar">
-        <button id="toggle-arranger" class="toggle-arranger-btn">🎹 Abrir Secuenciador / Arreglos</button>
-    </div>
-
-    <!-- MÓDULO DEL SECUENCIADOR / ARREGLISTA -->
-    <div id="arranger-module" class="module-panel">
-        <div class="arranger-controls">
-            <div style="display: flex; align-items: center; gap: 10px; color: white; font-weight: bold;">
-                BPM: <input type="number" id="arranger-bpm" class="tempo-input" value="100">
-            </div>
-            <button id="arranger-play" class="arranger-btn play">▶ PLAY</button>
-            <button id="arranger-stop" class="arranger-btn stop">🛑 STOP</button>
-        </div>
-
-        <div class="sequencer-grid">
-            <div class="track" id="container-melody">
-                <div class="track-header">
-                    <span class="track-title title-melody">🎤 Voz 1 (Grand Piano)</span>
-                    <div class="track-actions">
-                        <button class="mute-btn" data-track="container-melody">🔊 Mute</button>
-                        <button class="rec-btn" data-track="track-melody">🔴 Rec</button>
-                    </div>
-                </div>
-                <div id="track-melody" class="track-steps"></div>
-            </div>
-
-            <div class="track" id="container-harmony">
-                <div class="track-header">
-                    <span class="track-title title-harmony">🎤 Voz 2 (Rhodes)</span>
-                    <div class="track-actions">
-                        <button class="mute-btn" data-track="container-harmony">🔊 Mute</button>
-                        <button class="rec-btn" data-track="track-harmony">🔴 Rec</button>
-                    </div>
-                </div>
-                <div id="track-harmony" class="track-steps"></div>
-            </div>
-
-            <div class="track" id="container-chords">
-                <div class="track-header">
-                    <span class="track-title title-chords">🎹 Acompañamiento</span>
-                    <div class="track-actions">
-                        <button class="mute-btn" data-track="container-chords">🔊 Mute</button>
-                        <button class="rec-btn" data-track="track-chords">🔴 Rec</button>
-                    </div>
-                </div>
-                <div id="track-chords" class="track-steps"></div>
-            </div>
-        </div>
-        
-        <div style="text-align: center; color: #71717a; font-size: 0.8rem; margin-top: 10px; padding: 0 10px;">
-            * <b>Tip:</b> Toca una celda y usa <b>Espacio</b> para saltar rápido. Si la dejas vacía, se convertirá en un guión (-) al salir de ella.
-        </div>
-    </div>
-
     <script>
         // --- LÓGICA DE AUTENTICACIÓN ---
         const APP_PASSWORD = "Eco2026"; 
@@ -494,9 +376,6 @@
         let audioCtx;
         let masterCompressor;
         let reverbNode; 
-        let scheduledArrangerNodes = []; 
-        let activeRecordTrack = null; 
-        let activeRecordIndex = 0;
         
         const audioBuffers = { 
             'acoustic_grand_piano': {}, 
@@ -571,13 +450,13 @@
 
         const sustainToggle = document.getElementById('sustain-toggle');
 
-        function playSound(noteIndex, forceSustain = false, instrument = 'acoustic_grand_piano', startTime = 0, isArranger = false) {
+        function playSound(noteIndex, forceSustain = false, instrument = 'acoustic_grand_piano', startTime = 0) {
             initAudio();
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             const now = startTime === 0 ? audioCtx.currentTime : startTime;
             const isSustain = forceSustain || sustainToggle.checked;
-            const realPianoDuration = isSustain ? 8 : (isArranger ? 1.5 : 2);     
+            const realPianoDuration = isSustain ? 8 : 2;     
             const synthPianoDuration = isSustain ? 5 : 1.2;  
 
             if (isAudioLoaded) {
@@ -613,7 +492,6 @@
                         source.connect(gainNode);
                         gainNode.connect(masterCompressor);
                         source.start(now);
-                        if (isArranger) scheduledArrangerNodes.push(source);
                     }
                 };
 
@@ -641,7 +519,6 @@
             gainNode.connect(masterCompressor);
             oscillator.start(now);
             oscillator.stop(now + synthPianoDuration); 
-            if (isArranger) scheduledArrangerNodes.push(oscillator);
         }
 
         // --- SISTEMA DE DRONE PADS ---
@@ -794,95 +671,10 @@
         const totalNotes = numOctaves * 12 + 1; 
         const blackKeyIndices = [1, 3, 6, 8, 10]; 
 
-        // --- SISTEMA INICIALIZADOR DEL GRID DEL SECUENCIADOR ---
-        function initSequencerGrid(trackId) {
-            const container = document.getElementById(trackId);
-            container.innerHTML = '';
-            const numMeasures = 16; 
-            let stepCount = 0;
-            
-            for (let m = 0; m < numMeasures; m++) {
-                const measureDiv = document.createElement('div');
-                measureDiv.className = 'measure';
-                
-                for (let b = 0; b < 4; b++) { 
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'step-cell';
-                    input.dataset.index = stepCount;
-                    input.value = '-'; 
-                    
-                    input.addEventListener('keydown', (e) => {
-                        const allCells = Array.from(container.querySelectorAll('.step-cell'));
-                        const idx = allCells.indexOf(input);
-                        
-                        if (e.key === 'ArrowRight' && idx < allCells.length - 1) { allCells[idx+1].focus(); e.preventDefault(); }
-                        if (e.key === 'ArrowLeft' && idx > 0) { allCells[idx-1].focus(); e.preventDefault(); }
-                        if (e.key === 'Backspace' && input.value === '' && idx > 0) {
-                            allCells[idx-1].focus(); 
-                            e.preventDefault();
-                        }
-                        
-                        if (e.key === ' ' || e.code === 'Space') {
-                            e.preventDefault();
-                            if (input.value.trim() === '') input.value = '-';
-                            if (idx < allCells.length - 1) allCells[idx+1].focus();
-                        }
-                    });
-
-                    input.addEventListener('input', (e) => {
-                        const allCells = Array.from(container.querySelectorAll('.step-cell'));
-                        const idx = allCells.indexOf(input);
-                        if (input.value.includes(' ')) {
-                            input.value = input.value.replace(' ', ''); 
-                            if (input.value === '') input.value = '-'; 
-                            if (idx < allCells.length - 1) allCells[idx+1].focus();
-                        }
-                    });
-
-                    input.addEventListener('blur', () => {
-                        if (input.value.trim() === '') {
-                            input.value = '-';
-                        }
-                    });
-
-                    input.addEventListener('focus', () => {
-                        input.select(); 
-                        if (activeRecordTrack === trackId) {
-                            activeRecordIndex = parseInt(input.dataset.index);
-                        }
-                    });
-
-                    measureDiv.appendChild(input);
-                    stepCount++;
-                }
-                container.appendChild(measureDiv);
-            }
-        }
-
-        // --- SISTEMA STEP RECORDER ---
-        function appendToActiveTrack(text) {
-            if (!activeRecordTrack) return;
-            const container = document.getElementById(activeRecordTrack);
-            const cells = container.querySelectorAll('.step-cell');
-            
-            if (activeRecordIndex < cells.length) {
-                cells[activeRecordIndex].value = text;
-                activeRecordIndex++;
-                if(activeRecordIndex < cells.length) {
-                    // preventScroll evita que el celular salte al secuenciador cada vez que se graba una nota
-                    cells[activeRecordIndex].focus({ preventScroll: true });
-                }
-            }
-        }
-
         function bindPressEffect(element, noteIndex) {
             element.addEventListener('pointerdown', () => {
                 element.classList.add('pressed');
                 playSound(noteIndex, false, mainInstSelector.value);
-                if (activeRecordTrack && activeRecordTrack !== 'track-chords' && element.dataset.vocalTab) {
-                    appendToActiveTrack(element.dataset.vocalTab);
-                }
             });
             element.addEventListener('pointerup', () => element.classList.remove('pressed'));
             element.addEventListener('pointerleave', () => element.classList.remove('pressed'));
@@ -972,7 +764,6 @@
                 btn.addEventListener('pointerdown', () => {
                     btn.classList.add('pressed');
                     chordTypeNotes.forEach(interval => playSound(chordRootIndex + interval, true, accompInstSelector.value));
-                    if (activeRecordTrack === 'track-chords') appendToActiveTrack((index + 1).toString());
                 });
                 ['pointerup', 'pointerleave', 'pointercancel'].forEach(e => btn.addEventListener(e, () => btn.classList.remove('pressed')));
                 accompContainer.appendChild(btn);
@@ -988,6 +779,13 @@
             const currentFormula = formulas[scaleType];
             const rootLetterIndex = letters.indexOf(noteSelector.options[noteSelector.selectedIndex].dataset.letter);
             
+            // --- ACTUALIZACIÓN DEL TÍTULO DE LA ESCALA ---
+            const scaleTitleEl = document.getElementById('scale-title');
+            const noteLetter = noteSelector.options[noteSelector.selectedIndex].dataset.letter;
+            const accidentalChar = accidentalSelector.options[accidentalSelector.selectedIndex].dataset.char;
+            scaleTitleEl.textContent = `Escala ${scaleType} de ${noteLetter}${accidentalChar}`;
+            // ---------------------------------------------
+
             document.querySelectorAll('.key').forEach(key => { 
                 key.className = key.className.replace(/active|main|upper|lower/g, '').trim(); 
                 key.innerHTML = ''; 
@@ -1010,156 +808,6 @@
             }
             renderTessitura(); renderAccompaniment();
             setTimeout(() => centerPianoOnScale((baseOctave * 12) + rootPitch), 50); 
-        }
-
-        // --- INICIALIZAR LAS PISTAS DEL SECUENCIADOR ---
-        initSequencerGrid('track-melody');
-        initSequencerGrid('track-harmony');
-        initSequencerGrid('track-chords');
-
-        // --- SISTEMA DEL SECUENCIADOR / ARREGLISTA ---
-        const toggleArrangerBtn = document.getElementById('toggle-arranger');
-        const arrangerModule = document.getElementById('arranger-module');
-        
-        toggleArrangerBtn.addEventListener('click', () => {
-            if (arrangerModule.style.display === 'none' || arrangerModule.style.display === '') {
-                arrangerModule.style.display = 'block';
-                toggleArrangerBtn.innerHTML = '🎹 Ocultar Secuenciador';
-                toggleArrangerBtn.style.background = 'linear-gradient(135deg, #ef4444, #f43f5e)';
-                window.scrollTo({ top: arrangerModule.offsetTop - 20, behavior: 'smooth' });
-            } else {
-                arrangerModule.style.display = 'none';
-                toggleArrangerBtn.innerHTML = '🎹 Abrir Secuenciador / Arreglos';
-                toggleArrangerBtn.style.background = 'linear-gradient(135deg, #a78bfa, #818cf8)';
-                stopArranger();
-            }
-        });
-
-        const syncScroll = (e) => {
-            const target = e.target;
-            document.querySelectorAll('.track-steps').forEach(container => {
-                if(container !== target) container.scrollLeft = target.scrollLeft;
-            });
-        };
-        document.querySelectorAll('.track-steps').forEach(container => {
-            container.addEventListener('scroll', syncScroll);
-        });
-
-        document.querySelectorAll('.mute-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const trackId = e.target.dataset.track;
-                const container = document.getElementById(trackId);
-                if (container.classList.contains('muted')) {
-                    container.classList.remove('muted');
-                    e.target.textContent = '🔊 Mute';
-                    e.target.classList.remove('active-mute');
-                } else {
-                    container.classList.add('muted');
-                    e.target.textContent = '🔇 Muted';
-                    e.target.classList.add('active-mute');
-                }
-            });
-        });
-
-        document.querySelectorAll('.rec-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const trackId = e.target.dataset.track;
-                if (activeRecordTrack === trackId) {
-                    activeRecordTrack = null;
-                    e.target.classList.remove('active');
-                } else {
-                    document.querySelectorAll('.rec-btn').forEach(b => b.classList.remove('active'));
-                    activeRecordTrack = trackId;
-                    activeRecordIndex = 0; 
-                    e.target.classList.add('active');
-                    const firstCell = document.getElementById(trackId).querySelector('.step-cell');
-                    if(firstCell) firstCell.focus();
-                }
-            });
-        });
-
-        document.getElementById('arranger-stop').addEventListener('click', stopArranger);
-        document.getElementById('arranger-play').addEventListener('click', () => {
-            initAudio();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            stopArranger(); 
-            
-            const bpm = parseInt(document.getElementById('arranger-bpm').value) || 100;
-            const beatDuration = 60 / bpm;
-            const startTime = audioCtx.currentTime + 0.2; 
-
-            const basePitch = parseInt(noteSelector.value);
-            const accidentalOffset = parseInt(accidentalSelector.value);
-            const rootPitch = (basePitch + accidentalOffset + 12) % 12;
-            const baseOctave = parseInt(octaveSelector.value);
-            const scaleType = typeSelector.value;
-            const currentFormula = formulas[scaleType];
-            
-            const parseVocalTab = (token) => {
-                let octOffset = 0;
-                if (token.includes('+')) octOffset = 1;
-                if (token.includes('-') && token.length > 1) octOffset = -1; 
-                let numStr = token.replace(/[^0-9]/g, '');
-                if (!numStr) return null;
-                let degree = parseInt(numStr) - 1; 
-                if (degree < 0 || degree >= currentFormula.length) return null;
-                return ((baseOctave + octOffset) * 12) + rootPitch + currentFormula[degree];
-            };
-
-            const parseAndPlayTrack = (containerId, isChordTrack, forcedInstrument) => {
-                const container = document.getElementById(containerId);
-                if (container.parentElement.classList.contains('muted')) return;
-
-                const cells = Array.from(container.querySelectorAll('.step-cell'));
-                let timeOffset = 0;
-                
-                const accompOctave = parseInt(accompOctaveSelector.value);
-                const accompRootIndex = (accompOctave * 12) + rootPitch;
-                const chordsToGenerate = chordTemplates[scaleType];
-
-                cells.forEach(cell => {
-                    const token = cell.value.trim();
-                    
-                    if (token === '' || token === '-' || token === '0' || token.toLowerCase() === 'r') {
-                        // Silencio
-                    } else {
-                        if (!isChordTrack) {
-                            const noteIndex = parseVocalTab(token);
-                            if (noteIndex !== null) {
-                                playSound(noteIndex, false, forcedInstrument, startTime + timeOffset, true);
-                            }
-                        } else {
-                            let numStr = token.replace(/[^0-9]/g, '');
-                            if (numStr) {
-                                let chordIndex = parseInt(numStr) - 1;
-                                if (chordIndex >= 0 && chordIndex < chordsToGenerate.length) {
-                                    let romanChord = chordsToGenerate[chordIndex];
-                                    const intervalFromScaleRoot = currentFormula[chordIndex];
-                                    const chordRootIndex = accompRootIndex + intervalFromScaleRoot;
-                                    const chordTypeNotes = chordFormulas[romanChord];
-                                    
-                                    chordTypeNotes.forEach(interval => {
-                                        playSound(chordRootIndex + interval, true, accompInstSelector.value, startTime + timeOffset, true);
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    timeOffset += beatDuration; 
-                });
-            };
-
-            parseAndPlayTrack('track-melody', false, 'acoustic_grand_piano');
-            parseAndPlayTrack('track-harmony', false, 'electric_piano_1');
-            parseAndPlayTrack('track-chords', true, 'acoustic_grand_piano');
-        });
-
-        function stopArranger() {
-            if (!audioCtx) return;
-            scheduledArrangerNodes.forEach(node => {
-                try { node.stop(audioCtx.currentTime); } catch(e){}
-            });
-            scheduledArrangerNodes = [];
         }
 
         voiceSelector.addEventListener('change', renderScale);
