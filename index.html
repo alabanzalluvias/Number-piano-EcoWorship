@@ -486,7 +486,9 @@
                         
                         const gainNode = audioCtx.createGain();
                         let stretchCompensation = (semitonesDistance > 5) ? 0.85 : 1.0;
-                        gainNode.gain.setValueAtTime(3.8 * volumeRatio * stretchCompensation, now); 
+                        
+                        // --- INCREMENTO DE VOLUMEN (De 3.8 a 8.0) ---
+                        gainNode.gain.setValueAtTime(8.0 * volumeRatio * stretchCompensation, now); 
                         gainNode.gain.exponentialRampToValueAtTime(0.001, now + realPianoDuration); 
                         
                         source.connect(gainNode);
@@ -511,8 +513,10 @@
 
             oscillator.type = 'triangle'; 
             oscillator.frequency.value = frequency;
+            
+            // --- INCREMENTO DE VOLUMEN DE RESPALDO (De 1.3 a 3.0) ---
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(1.3, now + 0.02); 
+            gainNode.gain.linearRampToValueAtTime(3.0, now + 0.02); 
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + synthPianoDuration); 
 
             oscillator.connect(gainNode);
