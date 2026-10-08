@@ -70,9 +70,9 @@
         .tonality-group select:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: 1px solid rgba(0, 0, 0, 0.6); }
         .tonality-group select:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; }
 
-        .switches-wrapper { display: flex; justify-content: center; gap: 30px; width: 100%; max-width: 600px; margin-bottom: 20px; }
+        .switches-wrapper { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; max-width: 600px; margin-bottom: 20px; flex-wrap: wrap; }
         .switch-container { display: flex; align-items: center; gap: 10px; }
-        .switch-label { font-size: 15px; font-weight: 600; color: #d4d4d8; }
+        .switch-label { font-size: 14px; font-weight: 600; color: #d4d4d8; }
         .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3f3f46; transition: .4s; border-radius: 26px; }
@@ -80,6 +80,9 @@
         input:checked + .slider { background-color: var(--main-active); box-shadow: 0 0 12px rgba(167, 139, 250, 0.5); }
         #tuner-toggle:checked + .slider { background-color: var(--tuner-perfect); box-shadow: 0 0 12px rgba(34, 197, 94, 0.5); }
         input:checked + .slider:before { transform: translateX(22px); }
+
+        .piano-vol-container { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); padding: 6px 15px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .vol-slider { width: 90px; accent-color: var(--main-active); cursor: pointer; }
 
         .tuner-panel { width: 100%; max-width: 800px; background: rgba(24, 24, 27, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 15px 25px; margin-bottom: 20px; display: none; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(10px); box-sizing: border-box; }
         .tuner-panel.active { display: flex; }
@@ -97,13 +100,22 @@
         .piano { display: flex; position: relative; background: var(--piano-bg); padding: 6px; border-radius: 12px; width: max-content; margin: 0 auto; border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); }
         .key-wrapper { position: relative; display: flex; }
 
-        .key { display: flex; position: relative; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 12px; box-sizing: border-box; user-select: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: pan-x pan-y; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* VARIABLES PARA COLOR DINÁMICO DEL AFINADOR EN LA TECLA */
+        .key { 
+            display: flex; position: relative; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 12px; box-sizing: border-box; user-select: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: pan-x pan-y; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); 
+            --tc-hex: #22c55e;
+            --tc-rgba-bg: rgba(34, 197, 94, 0.65);
+            --tc-rgba-shadow: rgba(34, 197, 94, 0.5);
+            --tc-rgba-bg-black: rgba(34, 197, 94, 0.8);
+            --tc-rgba-shadow-black: rgba(34, 197, 94, 0.6);
+        }
+        
         .key.white { width: 48px; height: 190px; background: linear-gradient(to bottom, #ffffff 0%, #f4f4f5 100%); color: var(--white-key-text); border: 1px solid #d4d4d8; border-bottom: 4px solid #a1a1aa; border-radius: 0 0 6px 6px; margin-right: 2px; z-index: 1; }
         .key.black { width: 32px; height: 115px; background: linear-gradient(to bottom, #18181b 0%, #09090b 100%); color: var(--black-key-text); position: absolute; top: 0; left: 33px; border-radius: 0 0 6px 6px; z-index: 5; border: 1px solid #000000; border-bottom: 3px solid #000000; box-shadow: 2px 5px 10px rgba(0,0,0,0.7); }
 
-        .key.voice-active { border-color: #4ade80 !important; }
-        .key.voice-active::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(34, 197, 94, 0.65) !important; box-shadow: inset 0 0 25px rgba(34, 197, 94, 1), 0 0 15px rgba(34, 197, 94, 0.5) !important; border-radius: inherit; pointer-events: none; z-index: 10; }
-        .key.black.voice-active::after { background: rgba(34, 197, 94, 0.8) !important; box-shadow: inset 0 0 15px rgba(34, 197, 94, 1), 0 0 20px rgba(34, 197, 94, 0.6) !important; }
+        .key.voice-active { border-color: var(--tc-hex) !important; }
+        .key.voice-active::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--tc-rgba-bg) !important; box-shadow: inset 0 0 25px var(--tc-hex), 0 0 15px var(--tc-rgba-shadow) !important; border-radius: inherit; pointer-events: none; z-index: 10; }
+        .key.black.voice-active::after { background: var(--tc-rgba-bg-black) !important; box-shadow: inset 0 0 15px var(--tc-hex), 0 0 20px var(--tc-rgba-shadow-black) !important; }
 
         .key.tessitura::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(56, 189, 248, 0.15) 0%, transparent 60%); border-top: 4px solid var(--tessitura-color); border-radius: inherit; pointer-events: none; z-index: 2; }
         .key.black.tessitura::before { border-top: 3px solid var(--tessitura-color); background: linear-gradient(to bottom, rgba(56, 189, 248, 0.3) 0%, transparent 60%); }
@@ -146,7 +158,6 @@
         .drone-stop-btn:active { transform: translateY(2px); border-bottom-width: 1px; }
         
         .vol-control { display: flex; align-items: center; gap: 8px; color: #a1a1aa; font-size: 0.85rem;}
-        .vol-slider { width: 80px; accent-color: var(--tessitura-color); }
 
         @media (max-width: 768px) and (orientation: portrait) {
             body { padding: 10px 5px; justify-content: flex-start; }
@@ -156,8 +167,10 @@
             .legend { font-size: 11px; gap: 8px; padding: 4px 10px; margin-bottom: 10px; }
             .controls { gap: 6px; margin-bottom: 10px; }
             select { padding: 6px 10px; font-size: 13px; }
-            .switches-wrapper { gap: 15px; margin-bottom: 15px; flex-wrap: wrap;}
+            .switches-wrapper { gap: 15px; margin-bottom: 15px;}
             .switch-label { font-size: 13px; }
+            .piano-vol-container { padding: 5px 10px; gap: 8px; }
+            .vol-slider { width: 70px; }
             .tuner-panel { padding: 10px 15px; margin-bottom: 15px; }
             .tuner-note-display { font-size: 2rem; }
             .tuner-status { font-size: 0.85rem; }
@@ -186,7 +199,6 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE ACCESO CON CONTRASEÑA -->
     <div id="auth-overlay">
         <div class="auth-card">
             <h2>Vocal TAB</h2>
@@ -276,6 +288,11 @@
             </label>
             <span class="switch-label">Afinador (Mic)</span>
         </div>
+
+        <div class="piano-vol-container">
+            <span class="switch-label" style="font-size: 13px;">Vol. Piano</span>
+            <input type="range" id="piano-volume" class="vol-slider" min="0" max="100" step="1" value="70">
+        </div>
     </div>
 
     <div id="tuner-panel" class="tuner-panel">
@@ -325,7 +342,8 @@
             <h3>Drone Pads (Ambiente)</h3>
             <div class="module-controls">
                 <div class="vol-control">
-                    Vol: <input type="range" id="drone-volume" class="vol-slider" min="0" max="1" step="0.01" value="0.8">
+                    <!-- FADER DRONE PADS: Ajustado a 0-100 para igualar la lógica -->
+                    Vol: <input type="range" id="drone-volume" class="vol-slider" min="0" max="100" step="1" value="80">
                 </div>
                 <button id="drone-stop" class="drone-stop-btn">🛑 STOP PADS</button>
             </div>
@@ -375,6 +393,7 @@
 
         let audioCtx;
         let masterCompressor;
+        let pianoMasterGain; 
         let reverbNode; 
         
         const audioBuffers = { 
@@ -398,10 +417,23 @@
                 masterCompressor.release.value = 0.25;
                 masterCompressor.connect(audioCtx.destination);
                 
+                pianoMasterGain = audioCtx.createGain();
+                const initialVolPerc = document.getElementById('piano-volume').value / 100;
+                pianoMasterGain.gain.value = initialVolPerc * initialVolPerc * 2.0;
+                pianoMasterGain.connect(masterCompressor);
+
                 initReverb();
                 initDroneSystem();
             }
         }
+
+        document.getElementById('piano-volume').addEventListener('input', (e) => {
+            if(pianoMasterGain) {
+                let val = parseFloat(e.target.value) / 100;
+                let exponentialGain = val * val * 2.0; 
+                pianoMasterGain.gain.linearRampToValueAtTime(exponentialGain, audioCtx.currentTime + 0.1);
+            }
+        });
 
         function initReverb() {
             if(reverbNode) return;
@@ -487,12 +519,11 @@
                         const gainNode = audioCtx.createGain();
                         let stretchCompensation = (semitonesDistance > 5) ? 0.85 : 1.0;
                         
-                        // --- INCREMENTO DE VOLUMEN (De 3.8 a 8.0) ---
                         gainNode.gain.setValueAtTime(8.0 * volumeRatio * stretchCompensation, now); 
                         gainNode.gain.exponentialRampToValueAtTime(0.001, now + realPianoDuration); 
                         
                         source.connect(gainNode);
-                        gainNode.connect(masterCompressor);
+                        gainNode.connect(pianoMasterGain);
                         source.start(now);
                     }
                 };
@@ -514,13 +545,12 @@
             oscillator.type = 'triangle'; 
             oscillator.frequency.value = frequency;
             
-            // --- INCREMENTO DE VOLUMEN DE RESPALDO (De 1.3 a 3.0) ---
             gainNode.gain.setValueAtTime(0, now);
             gainNode.gain.linearRampToValueAtTime(3.0, now + 0.02); 
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + synthPianoDuration); 
 
             oscillator.connect(gainNode);
-            gainNode.connect(masterCompressor);
+            gainNode.connect(pianoMasterGain);
             oscillator.start(now);
             oscillator.stop(now + synthPianoDuration); 
         }
@@ -534,12 +564,21 @@
         function initDroneSystem() {
             if(droneMasterGain) return;
             droneMasterGain = audioCtx.createGain();
-            droneMasterGain.gain.value = droneVolumeSlider.value * 3.0; 
+            let initialVal = droneVolumeSlider.value / 100;
+            droneMasterGain.gain.value = initialVal * initialVal * 3.0; 
             const dryRoute = audioCtx.createGain(); dryRoute.gain.value = 1.5; droneMasterGain.connect(dryRoute); dryRoute.connect(masterCompressor);
             const wetRoute = audioCtx.createGain(); wetRoute.gain.value = 3.0; droneMasterGain.connect(wetRoute); wetRoute.connect(reverbNode); 
         }
 
-        droneVolumeSlider.addEventListener('input', (e) => { if(droneMasterGain) droneMasterGain.gain.linearRampToValueAtTime(e.target.value * 3.0, audioCtx.currentTime + 0.1); });
+        // LÓGICA FADER DRONES CON CURVA EXPONENCIAL
+        droneVolumeSlider.addEventListener('input', (e) => { 
+            if(droneMasterGain) {
+                let val = parseFloat(e.target.value) / 100;
+                let exponentialGain = val * val * 3.0;
+                droneMasterGain.gain.linearRampToValueAtTime(exponentialGain, audioCtx.currentTime + 0.1); 
+            }
+        });
+        
         document.getElementById('drone-stop').addEventListener('click', stopAllDrones);
 
         function stopAllDrones() {
@@ -645,14 +684,45 @@
                 else { smoothedMidiPitch = smoothedMidiPitch + (rawMidiPitch - smoothedMidiPitch) * lerpFactor; }
                 let centsFromActive = (smoothedMidiPitch - currentActiveNote) * 100;
                 if (centsFromActive > 60 || centsFromActive < -60) { currentActiveNote = Math.round(smoothedMidiPitch); centsFromActive = (smoothedMidiPitch - currentActiveNote) * 100; }
+                
                 let note = currentActiveNote; let cents = centsFromActive;
                 if (note >= 24 && note <= 90) { 
-                    tunerNoteDisplay.textContent = `${noteNamesGlobal[note % 12]}${Math.floor(note / 12) - 1}`;
+                    
+                    let colorHex, colorRgbaBg, colorRgbaShadow, colorRgbaBgBlack, colorRgbaShadowBlack;
+                    
                     let displayCents = Math.max(-75, Math.min(75, cents)); let leftPercent = ((displayCents + 75) / 150) * 100; tunerBlob.style.left = `${leftPercent}%`;
-                    if (Math.abs(cents) <= 10) { tunerBlob.style.backgroundColor = '#22c55e'; tunerBlob.style.boxShadow = '0 0 15px #22c55e'; tunerNoteDisplay.style.color = '#22c55e'; tunerStatusDisplay.textContent = "Perfecto"; tunerStatusDisplay.style.color = '#22c55e'; } 
-                    else if (cents < -10) { tunerBlob.style.backgroundColor = '#ef4444'; tunerBlob.style.boxShadow = '0 0 15px #ef4444'; tunerNoteDisplay.style.color = '#fca5a5'; tunerStatusDisplay.textContent = "♭ Bemol"; tunerStatusDisplay.style.color = '#fca5a5'; } 
-                    else { tunerBlob.style.backgroundColor = '#eab308'; tunerBlob.style.boxShadow = '0 0 15px #eab308'; tunerNoteDisplay.style.color = '#fde047'; tunerStatusDisplay.textContent = "Sostenido ♯"; tunerStatusDisplay.style.color = '#fde047'; }
-                    const pianoNoteIndex = note - 36; if (pianoNoteIndex >= 0 && pianoNoteIndex < totalNotes) { const targetKey = document.querySelector(`.key[data-note="${pianoNoteIndex}"]`); if (targetKey) targetKey.classList.add('voice-active'); }
+                    
+                    if (Math.abs(cents) <= 10) { 
+                        colorHex = '#22c55e'; colorRgbaBg = 'rgba(34, 197, 94, 0.65)'; colorRgbaShadow = 'rgba(34, 197, 94, 0.5)'; colorRgbaBgBlack = 'rgba(34, 197, 94, 0.8)'; colorRgbaShadowBlack = 'rgba(34, 197, 94, 0.6)';
+                        tunerBlob.style.backgroundColor = colorHex; tunerBlob.style.boxShadow = `0 0 15px ${colorHex}`; tunerNoteDisplay.style.color = colorHex; tunerStatusDisplay.textContent = "Perfecto"; tunerStatusDisplay.style.color = colorHex; 
+                    } else if (cents < -10) { 
+                        colorHex = '#ef4444'; colorRgbaBg = 'rgba(239, 68, 68, 0.65)'; colorRgbaShadow = 'rgba(239, 68, 68, 0.5)'; colorRgbaBgBlack = 'rgba(239, 68, 68, 0.8)'; colorRgbaShadowBlack = 'rgba(239, 68, 68, 0.6)';
+                        tunerBlob.style.backgroundColor = colorHex; tunerBlob.style.boxShadow = `0 0 15px ${colorHex}`; tunerNoteDisplay.style.color = '#fca5a5'; tunerStatusDisplay.textContent = "♭ Bemol"; tunerStatusDisplay.style.color = '#fca5a5'; 
+                    } else { 
+                        colorHex = '#eab308'; colorRgbaBg = 'rgba(234, 179, 8, 0.65)'; colorRgbaShadow = 'rgba(234, 179, 8, 0.5)'; colorRgbaBgBlack = 'rgba(234, 179, 8, 0.8)'; colorRgbaShadowBlack = 'rgba(234, 179, 8, 0.6)';
+                        tunerBlob.style.backgroundColor = colorHex; tunerBlob.style.boxShadow = `0 0 15px ${colorHex}`; tunerNoteDisplay.style.color = '#fde047'; tunerStatusDisplay.textContent = "Sostenido ♯"; tunerStatusDisplay.style.color = '#fde047'; 
+                    }
+                    
+                    const pianoNoteIndex = note - 36; 
+                    let degreeStr = "";
+                    
+                    if (pianoNoteIndex >= 0 && pianoNoteIndex < totalNotes) { 
+                        const targetKey = document.querySelector(`.key[data-note="${pianoNoteIndex}"]`); 
+                        if (targetKey) { 
+                            targetKey.style.setProperty('--tc-hex', colorHex);
+                            targetKey.style.setProperty('--tc-rgba-bg', colorRgbaBg);
+                            targetKey.style.setProperty('--tc-rgba-shadow', colorRgbaShadow);
+                            targetKey.style.setProperty('--tc-rgba-bg-black', colorRgbaBgBlack);
+                            targetKey.style.setProperty('--tc-rgba-shadow-black', colorRgbaShadowBlack);
+                            targetKey.classList.add('voice-active'); 
+                            
+                            if (targetKey.dataset.vocalTab) {
+                                degreeStr = ` (${targetKey.dataset.vocalTab})`;
+                            }
+                        } 
+                    }
+                    
+                    tunerNoteDisplay.textContent = `${noteNamesGlobal[note % 12]}${Math.floor(note / 12) - 1}${degreeStr}`;
                 }
             } else {
                 smoothedMidiPitch = -1; tunerNoteDisplay.textContent = "--"; tunerNoteDisplay.style.color = "#52525b"; tunerStatusDisplay.textContent = "Escuchando..."; tunerStatusDisplay.style.color = "#52525b"; tunerBlob.style.left = '50%'; tunerBlob.style.backgroundColor = '#52525b'; tunerBlob.style.boxShadow = 'none';
@@ -783,12 +853,10 @@
             const currentFormula = formulas[scaleType];
             const rootLetterIndex = letters.indexOf(noteSelector.options[noteSelector.selectedIndex].dataset.letter);
             
-            // --- ACTUALIZACIÓN DEL TÍTULO DE LA ESCALA ---
             const scaleTitleEl = document.getElementById('scale-title');
             const noteLetter = noteSelector.options[noteSelector.selectedIndex].dataset.letter;
             const accidentalChar = accidentalSelector.options[accidentalSelector.selectedIndex].dataset.char;
             scaleTitleEl.textContent = `Escala ${scaleType} de ${noteLetter}${accidentalChar}`;
-            // ---------------------------------------------
 
             document.querySelectorAll('.key').forEach(key => { 
                 key.className = key.className.replace(/active|main|upper|lower/g, '').trim(); 
